@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const [target] = process.argv.slice(2);
-
+const isFirefox = true;
 const outputDir = {
   dev: './dist/dev',
   production: './dist/staged',
@@ -21,7 +21,7 @@ const assetsPathFor = (assetsRelativePath) => {
 const manifest = Object.assign(
   {
     version: packageJson.version,
-    manifest_version: 3,
+    manifest_version: 2,
     content_scripts: [
       {
         matches: ['*://www.pathofexile.com/trade*'],
@@ -29,23 +29,31 @@ const manifest = Object.assign(
         css: [assetsPathFor('vendor.css'), assetsPathFor('better-trading.css')],
       },
     ],
-    background: {
-      service_worker: 'background.js',
-    },
+    // 🔄 Use MV2-style background for Firefox
+    background: isFirefox
+      ? {
+          scripts: ['background.js'], // ✅ classic background page for Firefox
+        }
+      : {
+          service_worker: 'background.js', // ✅ MV3 for Chrome
+        },
     permissions: ['storage'],
     host_permissions: ['*://poe.ninja/*'],
-    web_accessible_resources: [
-      {
-        resources: [assetsPathFor('images/*')],
-        matches: ['*://www.pathofexile.com/*'],
-      },
-    ],
+    web_accessible_resources: [assetsPathFor('images/*')],
     icons: {
       16: 'icon16.png',
       48: 'icon48.png',
       64: 'icon64.png',
       128: 'icon128.png',
     },
+    ...(isFirefox && {
+      browser_specific_settings: {
+        gecko: {
+          id: 'better-trading@example.com',
+          strict_min_version: '109.0',
+        },
+      },
+    }),
   },
   packageJson.manifest
 );

@@ -2,7 +2,9 @@ SHELL := /bin/bash
 
 # Build configuration
 # -------------------
-
+export TARGET_BROWSER=firefox
+# export WEB_EXT_API_KEY
+# export WEB_EXT_API_SECRET
 APP_NAME = `grep -m1 name package.json | awk -F: '{ print $$2 }' | sed 's/[ ",]//g'`
 APP_VERSION = `grep -m1 version package.json | awk -F: '{ print $$2 }' | sed 's/[ ",]//g'`
 GIT_REVISION = `git rev-parse HEAD`
@@ -78,6 +80,16 @@ package-firefox: ## Package the firefox extension
 	sed -i "" -E "s/var hasDom = typeof self === 'object' && self !== null && self.Object === Object && typeof Window !== 'undefined' && self.constructor === Window && typeof document === 'object' && document !== null && self.document === document && typeof location === 'object' && location !== null && self.location === location && typeof history === 'object' && history !== null && self.history === history && typeof navigator === 'object' && navigator !== null && self.navigator === navigator && typeof navigator.userAgent === 'string'/var hasDom=true/g" ./dist/staged/assets/vendor.js
 	mkdir -p ./dist-packages
 	(cd ./dist/staged/; zip -r ../../dist-packages/firefox.zip *)
+	# Automatically sign the extension
+	@if [ -z "$$WEB_EXT_API_KEY" ] || [ -z "$$WEB_EXT_API_SECRET" ]; then \
+		echo "⚠️  Skipping signing: WEB_EXT_API_KEY or WEB_EXT_API_SECRET not set."; \
+	else \
+		web-ext sign \
+			--source-dir=./dist/staged \
+			--artifacts-dir=./dist-packages \
+			--api-key=$$WEB_EXT_API_KEY \
+			--api-secret=$$WEB_EXT_API_SECRET; \
+	fi
 
 .PHONY: dev
 dev: ## Build the extension for development purposes, watching files for update

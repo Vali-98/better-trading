@@ -1,6 +1,6 @@
 {
   "name": "better-trading",
-  "version": "1.9.0",
+  "version": "0.0.1",
   "changelog": "1-9-0-poe2-ea-2",
   "private": true,
   "directories": {
@@ -34,10 +34,10 @@
     "@glimmer/tracking": "~1.0.0-beta.3",
     "@types/chai": "~4.1.7",
     "@types/ember": "~3.1.1",
+    "@types/ember__test-helpers": "~0.7.8",
     "@types/ember-mocha": "~0.14.6",
     "@types/ember-test-helpers": "~1.0.5",
     "@types/ember-testing-helpers": "~0.0.3",
-    "@types/ember__test-helpers": "~0.7.8",
     "@types/handlebars": "~4.1.0",
     "@types/lodash": "^4.14.186",
     "@types/mocha": "~5.2.6",
@@ -106,5 +106,8 @@
     "tslint": "~5.16.0",
     "tslint-config-prettier": "~1.18.0",
     "typescript": "~3.9.2"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.12.0"
   }
 }
