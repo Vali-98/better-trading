@@ -37,7 +37,7 @@ const manifest = Object.assign(
     web_accessible_resources: [
       {
         resources: [assetsPathFor('images/*')],
-        matches: ['*://www.pathofexile.com/*'],
+        matches: ['*pathofexile.com/*'],
       },
     ],
     icons: {
