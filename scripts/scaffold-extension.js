@@ -24,7 +24,7 @@ const manifest = Object.assign(
     manifest_version: 2,
     content_scripts: [
       {
-        matches: ['*://www.pathofexile.com/trade*'],
+        matches: ['*://*.pathofexile.com/trade*'],
         js: [assetsPathFor('vendor.js'), assetsPathFor('better-trading.js')],
         css: [assetsPathFor('vendor.css'), assetsPathFor('better-trading.css')],
       },
@@ -32,10 +32,10 @@ const manifest = Object.assign(
     // 🔄 Use MV2-style background for Firefox
     background: isFirefox
       ? {
-          scripts: ['background.js'], // ✅ classic background page for Firefox
+          scripts: ['background.js'], // classic background page for Firefox
         }
       : {
-          service_worker: 'background.js', // ✅ MV3 for Chrome
+          service_worker: 'background.js', // MV3 for Chrome
         },
     permissions: ['storage'],
     host_permissions: ['*://poe.ninja/*'],
