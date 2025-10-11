@@ -42,7 +42,7 @@ const POE2_ASCENDANCY_ICONS: Array<Record<string, BookmarksFolderIcon>> = [
   BookmarksFolderAscendancyPoE2WarriorIcon,
   BookmarksFolderAscendancyPoE2SorceressIcon,
   BookmarksFolderAscendancyPoE2RangerIcon,
-  BookmarksFolderAscendancyPoE2HuntressIcon, 
+  BookmarksFolderAscendancyPoE2HuntressIcon,
   BookmarksFolderAscendancyPoE2MonkIcon,
   BookmarksFolderAscendancyPoE2MercenaryIcon,
   BookmarksFolderAscendancyPoE2WitchIcon,

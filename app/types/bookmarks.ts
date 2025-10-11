@@ -76,13 +76,13 @@ export enum BookmarksFolderAscendancyScionIcon {
 export enum BookmarksFolderAscendancyPoE2WarriorIcon {
   TITAN = 'poe2-titan',
   WARBRINGER = 'poe2-warbringer',
-  SMITH_OF_KITAVA = 'poe2-smith-of-kitava'
+  SMITH_OF_KITAVA = 'poe2-smith-of-kitava',
 }
 
 export enum BookmarksFolderAscendancyPoE2WitchIcon {
   INFERNALIST = 'poe2-infernalist',
   BLOOD_MAGE = 'poe2-blood-mage',
-  LICH = 'poe2-lich'
+  LICH = 'poe2-lich',
 }
 
 export enum BookmarksFolderAscendancyPoE2RangerIcon {
@@ -98,7 +98,7 @@ export enum BookmarksFolderAscendancyPoE2SorceressIcon {
 export enum BookmarksFolderAscendancyPoE2MercenaryIcon {
   WITCH_HUNTER = 'poe2-witch-hunter',
   GEMLING_LEGIONNAIRE = 'poe2-gemling-legionnaire',
-  TACTICIAN = 'poe2-tactician'
+  TACTICIAN = 'poe2-tactician',
 }
 
 export enum BookmarksFolderAscendancyPoE2MonkIcon {
