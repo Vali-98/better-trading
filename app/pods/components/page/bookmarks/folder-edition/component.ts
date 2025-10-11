@@ -25,6 +25,7 @@ import {
   BookmarksFolderPoE2ItemIcon,
   BookmarksFolderStruct,
   BookmarksFolderIcon,
+  BookmarksFolderAscendancyPoE2HuntressIcon,
 } from 'better-trading/types/bookmarks';
 
 const POE1_ASCENDANCY_ICONS: Array<Record<string, BookmarksFolderIcon>> = [
@@ -39,11 +40,12 @@ const POE1_ASCENDANCY_ICONS: Array<Record<string, BookmarksFolderIcon>> = [
 
 const POE2_ASCENDANCY_ICONS: Array<Record<string, BookmarksFolderIcon>> = [
   BookmarksFolderAscendancyPoE2WarriorIcon,
-  BookmarksFolderAscendancyPoE2WitchIcon,
-  BookmarksFolderAscendancyPoE2RangerIcon,
   BookmarksFolderAscendancyPoE2SorceressIcon,
-  BookmarksFolderAscendancyPoE2MercenaryIcon,
+  BookmarksFolderAscendancyPoE2RangerIcon,
+  BookmarksFolderAscendancyPoE2HuntressIcon, 
   BookmarksFolderAscendancyPoE2MonkIcon,
+  BookmarksFolderAscendancyPoE2MercenaryIcon,
+  BookmarksFolderAscendancyPoE2WitchIcon,
 ];
 
 interface Args {
