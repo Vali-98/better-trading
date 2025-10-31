@@ -1,5 +1,9 @@
 ![logo](https://user-images.githubusercontent.com/4255460/70675096-29118280-1c56-11ea-8e58-c8e74423d0eb.png)
 
+# Fork note:
+
+This is a fork for firefox support, notably we `sed` values in the vendor.js to patch Firefox compatibility.
+
 # Better trading
 
 A browser extension that enhances the pathofexile.com trade site experience for Path of Exile and Path of Exile 2.

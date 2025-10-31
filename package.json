@@ -108,6 +108,7 @@
     "typescript": "~3.9.2"
   },
   "dependencies": {
+    "@types/glob": "^9.0.0",
     "webextension-polyfill": "^0.12.0"
   }
 }

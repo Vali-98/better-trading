@@ -18,6 +18,20 @@ const assetsPathFor = (assetsRelativePath) => {
   return `ember-build/${path}`;
 };
 
+const host_permissions = isFirefox
+      ? {}
+      : { host_permissions: ['*://poe.ninja/*'] }
+
+const browser_specific_settings = isFirefox ? {
+      browser_specific_settings: {
+        gecko: {
+          id: 'better-trading@example.com',
+          strict_min_version: '109.0',
+        },
+      },
+    } : {}
+const merged = {...host_permissions, ...browser_specific_settings}
+
 const manifest = Object.assign(
   {
     version: packageJson.version,
@@ -37,8 +51,10 @@ const manifest = Object.assign(
       : {
           service_worker: 'background.js', // MV3 for Chrome
         },
-    permissions: ['storage'],
-    host_permissions: ['*://poe.ninja/*'],
+    permissions: [
+      'storage',
+      ...(isFirefox ? ['*://poe.ninja/*'] : []),  
+      ],
     web_accessible_resources: [assetsPathFor('images/*')],
     icons: {
       16: 'icon16.png',
@@ -46,14 +62,7 @@ const manifest = Object.assign(
       64: 'icon64.png',
       128: 'icon128.png',
     },
-    ...(isFirefox && {
-      browser_specific_settings: {
-        gecko: {
-          id: 'better-trading@example.com',
-          strict_min_version: '109.0',
-        },
-      },
-    }),
+    ...merged,
   },
   packageJson.manifest
 );
@@ -63,3 +72,4 @@ for (const file of fs.readdirSync('./extension')) {
   fs.copyFileSync(path.join('./extension', file), path.join(outputDir, file));
 }
 fs.writeFileSync(path.join(outputDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+
