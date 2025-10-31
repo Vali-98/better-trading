@@ -87,7 +87,8 @@ package-firefox: ## Package the firefox extension
 			--source-dir=./dist/staged \
 			--artifacts-dir=./dist-packages \
 			--api-key=$$WEB_EXT_API_KEY \
-			--api-secret=$$WEB_EXT_API_SECRET; \
+			--api-secret=$$WEB_EXT_API_SECRET \
+			--channel=unlisted; \
 	fi
 
 .PHONY: dev
