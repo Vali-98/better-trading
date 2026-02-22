@@ -31,7 +31,7 @@
     local-class="folders-wrapper"
     @tagName="div"
     @model={{this.displayedFolders}}
-    @onChange={{perform this.reorderFoldersTask}}
+    @onChange={{fn (perform this.reorderFoldersTask)}}
     as |group|
   >
     {{#each this.displayedFolders key="id" as |folder|}}

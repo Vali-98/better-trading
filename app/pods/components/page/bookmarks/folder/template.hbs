@@ -74,7 +74,7 @@
         local-class="trades {{if this.isReorderingTrades "is-reordering"}}"
         @tagName="ul"
         @model={{this.trades}}
-        @onChange={{perform this.reorderTradesTask}}
+        @onChange={{fn (perform this.reorderTradesTask)}}
         as |group|
       >
         {{#each this.trades key="id" as |trade|}}
