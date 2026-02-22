@@ -19,9 +19,10 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "scaffold-extension": "node ./scripts/scaffold-extension.js",
-    "ember:watch": "ember build --watch --environment development --output-path ./dist/dev/ember-build",
     "dev": "npm run clean && npm run scaffold-extension dev && npm run ember:watch",
+    "ember:watch": "ember build --watch --environment development --output-path ./dist/dev/ember-build",
+    "postinstall": "patch-package",
+    "scaffold-extension": "node ./scripts/scaffold-extension.js",
     "test": "ember exam --reporter dot"
   },
   "devDependencies": {
@@ -95,6 +96,7 @@
     "js-base64": "^3.7.2",
     "loader.js": "~4.7.0",
     "lodash": "^4.17.21",
+    "patch-package": "^6.5.1",
     "prettier": "~2.1.2",
     "rimraf": "^2.7.1",
     "sass": "~1.20.1",
