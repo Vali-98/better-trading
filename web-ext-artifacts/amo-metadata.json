@@ -1,0 +1,14 @@
+{
+  "categories": [
+    "games-entertainment"
+  ],
+  "summary": {
+    "en-US": "A bookmarking extention for Path of Exile and Path of Exile 2 trading."
+  },
+  "version" : {
+    "license": "MIT"
+  },
+  "homepage": {
+    "en-US": "https://github.com/Vali-98/better-trading"
+  }
+}
