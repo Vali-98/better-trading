@@ -64,10 +64,10 @@ export default class ItemResultsEnhance extends Service {
     if (unenhancedElements.length === 0) return;
     if (unenhancedElements[0].classList.contains('exchange')) return;
 
-    await asyncLoop<ItemResultsEnhancerService>(this.enhancerServices, (enhancer) => {
+    await asyncLoop<ItemResultsEnhancerService>(this.enhancerServices, async (enhancer) => {
       if (enhancer.slug && this.itemResults.disabledEnhancerSlugs.includes(enhancer.slug)) return;
-      if (!enhancer.prepare) return;
-      return enhancer.prepare();
+      if (!enhancer.prepare) return
+      return await enhancer.prepare();
     });
 
     await asyncLoop<HTMLDivElement>(unenhancedElements, async (unenhancedElement) => {
