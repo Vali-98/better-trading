@@ -7,7 +7,7 @@ if (!extensionApi) throw new Error('extension API not found. Both `chrome` and `
 
 extensionApi.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.query === 'poe-ninja') {
-    fetch('https://poe.ninja/api' + request.resource)
+    fetch('https://poe.ninja' + request.resource)
       .then(function(response) { return response.json() })
       .then(function(payload) { sendResponse(payload) })
       .catch(function(_error) { sendResponse(null) });

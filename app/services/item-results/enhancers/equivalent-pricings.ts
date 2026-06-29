@@ -31,7 +31,7 @@ export default class EquivalentPricings extends Service implements ItemResultsEn
     const currentLeague = this.tradeLocation.league;
     const supportedVersion = this.tradeLocation.version === '1';
     this.chaosRatios =
-      supportedVersion && currentLeague ? await this.poeNinja.fetchChaosRatiosFor(currentLeague) : null;
+      supportedVersion && currentLeague ? await this.poeNinja.fetchChaosRatiosFor(currentLeague, this.tradeLocation.version) : null;
   }
 
   // eslint-disable-next-line complexity

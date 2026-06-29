@@ -9,13 +9,21 @@ import {dateDelta} from 'better-trading/utilities/date-delta';
 import ExtensionBackground from 'better-trading/services/extension-background';
 import Storage from 'better-trading/services/storage';
 
+import { TradeSiteVersion } from 'better-trading/types/trade-location';
+
 export interface PoeNinjaCurrenciesPayloadLine {
-  currencyTypeName: string;
-  chaosEquivalent: number;
+  id: string;
+  primaryValue: number;
+}
+
+export interface PoeNinjaCurrenciesPayloadItem {
+    id: string;
+    detailsId: string;
 }
 
 export interface PoeNinjaCurrenciesPayload {
   lines: PoeNinjaCurrenciesPayloadLine[];
+  items: PoeNinjaCurrenciesPayloadItem[];
 }
 
 export interface PoeNinjaCurrenciesRatios {
@@ -23,7 +31,7 @@ export interface PoeNinjaCurrenciesRatios {
 }
 
 // Constants
-const CURRENCIES_RESOURCE_URI = '/data/currencyoverview?type=Currency';
+const CURRENCIES_RESOURCE_URI = '/api/economy/exchange/current/overview?type=Currency';
 const RATIOS_CACHE_DURATION = 3600000; // 1 hour
 const RATIOS_CACHE_KEY = 'poe-ninja-chaos-ratios-cache';
 
@@ -34,14 +42,15 @@ export default class PoeNinja extends Service {
   @service('storage')
   storage: Storage;
 
-  async fetchChaosRatiosFor(league: string): Promise<PoeNinjaCurrenciesRatios> {
+  async fetchChaosRatiosFor(league: string, tradeVersion: TradeSiteVersion): Promise<PoeNinjaCurrenciesRatios> {
+    const gameVersionName = tradeVersion === '1' ? '/poe1' : '/poe2'
     const cachedRatios = await this.lookupCachedChaosRatiosFor(league);
     if (cachedRatios) return cachedRatios;
 
-    const uri = `${CURRENCIES_RESOURCE_URI}&league=${league}`;
+    const uri = `${gameVersionName}${CURRENCIES_RESOURCE_URI}&league=${league}`;
     const payload = (await this.extensionBackground.fetchPoeNinjaResource(uri)) as PoeNinjaCurrenciesPayload;
 
-    const ratios = this.parseChaosRatios(payload);
+    const ratios = this.parseChaosRatios(payload);   
     await this.cacheChaosRatiosFor(league, ratios);
 
     return ratios;
@@ -57,8 +66,9 @@ export default class PoeNinja extends Service {
 
   private parseChaosRatios(payload: PoeNinjaCurrenciesPayload): PoeNinjaCurrenciesRatios {
     return payload.lines.reduce(
-      (acc: PoeNinjaCurrenciesRatios, {currencyTypeName, chaosEquivalent}: PoeNinjaCurrenciesPayloadLine) => {
-        acc[slugify(currencyTypeName)] = chaosEquivalent;
+      (acc: PoeNinjaCurrenciesRatios, { id, primaryValue}: PoeNinjaCurrenciesPayloadLine) => {
+        const item = payload.items.find(item => item.id === id)
+        acc[slugify(item?.detailsId ?? id)] = primaryValue;
 
         return acc;
       },
