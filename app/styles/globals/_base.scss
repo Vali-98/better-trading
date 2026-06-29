@@ -1,11 +1,7 @@
 body.bt-body {
   overflow-y: scroll;
-
-  #trade {
-    width: calc(100% - #{$extension-width});
-    margin: 0;
-    transition: width 0.2s ease;
-  }
+  padding-right: $extension-width;
+  transition: padding 0.2s ease;
 
   #better-trading-container {
     position: fixed;
@@ -21,9 +17,7 @@ body.bt-body {
   }
 
   &.bt-is-collapsed {
-    #trade {
-      width: 100%;
-    }
+    padding-right: 0;
 
     #better-trading-container {
       right: #{-1 * $extension-width};
