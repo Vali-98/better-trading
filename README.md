@@ -4,6 +4,17 @@
 
 This is a fork for firefox support, notably we `sed` values in the vendor.js to patch Firefox compatibility.
 
+#### Disclaimers:
+
+What this fork is for:
+- Maintaining a port of better-trading for Firefox
+- Maintaining existing features of better-trading
+- Reaching feature parity for PoE2 trading
+
+What this fork is NOT for:
+- New features
+- Taking over development from upstream
+
 # Original Repo:
 
 # Better trading
