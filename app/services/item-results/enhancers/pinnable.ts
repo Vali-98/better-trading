@@ -99,10 +99,14 @@ export default class Pinnable extends Service implements ItemResultsEnhancerServ
     const pricingElement = result.querySelector('.details .price') as HTMLElement;
 
     if (!detailsElement || !renderedItemElement || !pricingElement) return null;
-
+    const clonedDetail = detailsElement.cloneNode(true) as HTMLElement
+    const itemPopup = clonedDetail.querySelector('.middle .item-popup')
+    if(itemPopup) {
+      itemPopup.classList.add('bt-pinned-item-popup')
+    }
     return {
       id,
-      detailsElement: detailsElement.cloneNode(true) as HTMLElement,
+      detailsElement: clonedDetail,
       renderedItemElement: renderedItemElement.cloneNode(true) as HTMLElement,
       pricingElement: pricingElement.cloneNode(true) as HTMLElement,
       pinnedAt: new Date().toISOString(),
@@ -114,6 +118,7 @@ export default class Pinnable extends Service implements ItemResultsEnhancerServ
 
     window.document.querySelectorAll('[bt-enhanced]').forEach((itemResult: HTMLElement) => {
       if (!itemResult.dataset.id) return;
+ 
 
       itemResult.classList.toggle('bt-pinned', pinnedIds.includes(itemResult.dataset.id));
     });
