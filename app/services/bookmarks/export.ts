@@ -79,11 +79,12 @@ export default class Export extends Service {
 
       const trades: BookmarksTradeStruct[] = potentialPayload.trs.map((trade) => {
         let version: string, type: string, slug: string;
-        if (exportVersion >= 3) {
-          [version, type, slug] = trade.loc.split(':');
+        const locData = trade.loc.split(':')
+        if (exportVersion >= 3 || locData.length === 3) {
+          [version, type, slug] = locData;
         } else {
           version = '1';
-          [type, slug] = trade.loc.split(':');
+          [type, slug] = locData;
         }
 
         return {
