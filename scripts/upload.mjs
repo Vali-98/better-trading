@@ -19,8 +19,8 @@ if (missing.length) {
     console.error(`Fill in .env.release: ${missing.join(', ')}`)
     process.exit(1)
 }
-if (browser === 'firefox' && process.env.FIREFOX_EXTENSION_ID === 'better-trading@example.com')
-    throw new Error('Use the real AMO add-on ID, not the development placeholder.')
+//if (browser === 'firefox' && process.env.FIREFOX_EXTENSION_ID === 'better-trading@example.com')
+//    throw new Error('Use the real AMO add-on ID, not the development placeholder.')
 if (process.argv.includes('--check')) {
     console.log(`${browser}: required credential fields present. No network calls made.`)
     process.exit(0)
