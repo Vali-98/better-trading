@@ -1,12 +1,17 @@
 import type { QueryClient } from '@tanstack/react-query'
-import { useResultsStore } from '../stores/results'
+import { useSettingsStore } from '../stores/settings'
+import { usePinnedStore } from '../stores/pinned'
 import { currentLocation } from './bookmarks/storage'
 import { getCurrencyRatios } from './results/currencyRatios'
 import { createSimilarGroupState, regroupSimilarRows } from './results/similarGroups'
 import { addEquivalentPrices } from './results/enhancers/equivalentPricing'
 import { addPinButton } from './results/enhancers/pinning'
 import { addSocketWarning } from './results/enhancers/socketWarning'
-import { highlightMatchingStats, statNeedles } from './results/enhancers/statHighlight'
+import {
+    clearHighlightedStats,
+    highlightMatchingStats,
+    statNeedles,
+} from './results/enhancers/statHighlight'
 
 export function startResultsController(client: QueryClient) {
     const style = document.createElement('style')
@@ -22,6 +27,7 @@ export function startResultsController(client: QueryClient) {
     const clearEnhancements = () => {
         for (const [row, disposers] of cleanups) {
             disposers.forEach((dispose) => dispose())
+            clearHighlightedStats(row)
             row.removeAttribute('bt-enhanced')
             row.removeAttribute('bt-regroup-state')
         }
@@ -45,14 +51,14 @@ export function startResultsController(client: QueryClient) {
             const rows = Array.from(
                 document.querySelectorAll<HTMLElement>('.resultset > div.row[data-id]')
             ).filter((row) => !row.classList.contains('exchange'))
-            if (!rows.length && useResultsStore.getState().pinned.length)
-                useResultsStore.getState().setPinned([])
+            if (!rows.length && usePinnedStore.getState().pinned.length)
+                usePinnedStore.getState().setPinned([])
             for (const [row, disposers] of cleanups)
                 if (!row.isConnected) {
                     disposers.forEach((dispose) => dispose())
                     cleanups.delete(row)
                 }
-            const disabled = useResultsStore.getState().disabled
+            const disabled = useSettingsStore.getState().disabled
             const context = currentLocation()
             let ratios: Record<string, number> = {}
             if (
@@ -77,6 +83,9 @@ export function startResultsController(client: QueryClient) {
             const needles = statNeedles()
             const similarGroup = createSimilarGroupState()
             for (const row of rows) {
+                clearHighlightedStats(row)
+                if (!disabled.includes('highlight-stat-filters'))
+                    highlightMatchingStats(row, needles)
                 if (!cleanups.has(row)) {
                     const disposers: (() => void)[] = []
                     cleanups.set(row, disposers)
@@ -86,8 +95,6 @@ export function startResultsController(client: QueryClient) {
                         disposers.push(() => node.remove())
                     }
                     addPinButton(row, add)
-                    if (!disabled.includes('highlight-stat-filters'))
-                        highlightMatchingStats(row, needles, (cleanup) => disposers.push(cleanup))
                     if (!disabled.includes('maximum-sockets') && context.version === '1')
                         addSocketWarning(row, add)
                     if (!disabled.includes('equivalent-pricings'))
@@ -104,23 +111,51 @@ export function startResultsController(client: QueryClient) {
             }
         }
     }
-    const observer = new MutationObserver(() => {
+    const observer = new MutationObserver((mutations) => {
         const newRows = Array.from(
             document.querySelectorAll<HTMLElement>(
                 '.resultset > div.row[data-id]:not([bt-enhanced])'
             )
         ).some((row) => !row.classList.contains('exchange'))
-        if (newRows || !document.querySelector('.resultset > div.row')) schedule()
+        const changedSearch = mutations.some(
+            (mutation) =>
+                mutation.target instanceof Element &&
+                Boolean(mutation.target.closest('.search-advanced-pane'))
+        )
+        const changedMods = mutations.some((mutation) => {
+            const target =
+                mutation.target instanceof Element ? mutation.target : mutation.target.parentElement
+            return Boolean(target?.closest('.item-mod,.explicitMod,.implicitMod,.pseudoMod'))
+        })
+        if (changedMods) {
+            const needles = statNeedles()
+            for (const row of document.querySelectorAll<HTMLElement>(
+                '.resultset > div.row[data-id]'
+            )) {
+                clearHighlightedStats(row)
+                if (!useSettingsStore.getState().disabled.includes('highlight-stat-filters'))
+                    highlightMatchingStats(row, needles)
+            }
+        }
+        if (newRows || changedSearch || !document.querySelector('.resultset > div.row')) schedule()
     })
     observer.observe(document.querySelector('#trade')?.parentElement ?? document.body, {
         childList: true,
+        characterData: true,
         subtree: true,
     })
-    const unsubscribe = useResultsStore.subscribe((state, old) => {
+    const onSearchInput = (event: Event) => {
+        if (event.target instanceof Element && event.target.closest('.search-advanced-pane'))
+            schedule()
+    }
+    document.addEventListener('input', onSearchInput, true)
+    const unsubscribeSettings = useSettingsStore.subscribe((state, old) => {
         if (state.disabled !== old.disabled) {
             clearEnhancements()
             void process()
         }
+    })
+    const unsubscribe = usePinnedStore.subscribe((state) => {
         for (const row of document.querySelectorAll<HTMLElement>('[bt-enhanced]')) {
             const pinned = state.pinned.some((item) => item.id === row.dataset.id)
             row.classList.toggle('bt-pinned', pinned)
@@ -134,7 +169,9 @@ export function startResultsController(client: QueryClient) {
         clearTimeout(retryTimer)
         clearTimeout(scheduled)
         observer.disconnect()
+        document.removeEventListener('input', onSearchInput, true)
         unsubscribe()
+        unsubscribeSettings()
         style.remove()
         for (const row of document.querySelectorAll<HTMLElement>('[bt-enhanced]'))
             row.classList.remove('bt-pinned', 'bt-scroll-target')

@@ -15,14 +15,30 @@ export function recommendTitle() {
     )
 }
 export function searchedStats() {
-    return Array.from(
-        document.querySelectorAll(
-            '.search-advanced-pane:last-child .filter-group-body .filter:not(.disabled) .filter-title'
+    return [
+        ...new Set(
+            Array.from(
+                document.querySelectorAll(
+                    '.search-advanced-pane .filter-group-body .filter:not(.disabled) .filter-title'
+                ),
+                (node) => {
+                    const type = node
+                        .querySelector('.mutate-type')
+                        ?.textContent?.trim()
+                        .toLowerCase()
+                    if (!type) return ''
+                    const value = (
+                        node.querySelector(':scope > span')?.textContent ??
+                        node.textContent ??
+                        ''
+                    )
+                        .trim()
+                        .toLowerCase()
+                    return value
+                        .replace(/^\((?:pseudo|psuedo|enchant)\)\s*/, '')
+                        .replace(/^(?:pseudo|psuedo|enchant)\s+/, '')
+                }
+            ).filter(Boolean)
         ),
-        (node) =>
-            (node.textContent ?? '')
-                .trim()
-                .toLowerCase()
-                .replace(/^pseudo /, '')
-    )
+    ]
 }

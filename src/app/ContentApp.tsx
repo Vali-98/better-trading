@@ -21,16 +21,16 @@ export function ContentApp() {
     }, [collapsed])
     return (
         <>
-            <PanelHeader
-                collapsed={collapsed}
-                about={about}
-                onToggleCollapsed={toggleCollapsed}
-                onCloseAbout={() => setAbout(false)}
-                onToggleAbout={() => setAbout(!about)}
-            />
             <aside
                 aria-label="Better Trading"
                 className={`bt-panel ${collapsed ? 'collapsed' : ''}`}>
+                <PanelHeader
+                    collapsed={collapsed}
+                    about={about}
+                    onToggleCollapsed={toggleCollapsed}
+                    onCloseAbout={() => setAbout(false)}
+                    onToggleAbout={() => setAbout(!about)}
+                />
                 {!collapsed && (
                     <>
                         <Changelog />

@@ -9,7 +9,8 @@ vi.mock('wxt/browser', () => ({
     },
 }))
 import { startResultsController } from './resultsController'
-import { useResultsStore } from '../stores/results'
+import { useSettingsStore } from '../stores/settings'
+import { usePinnedStore } from '../stores/pinned'
 
 let stop = () => {}
 const settle = () => new Promise((resolve) => setTimeout(resolve, 20))
@@ -18,7 +19,8 @@ const row = (id: string) =>
 beforeEach(() => {
     window.history.replaceState({}, '', '/trade/search/Standard/test')
     document.body.innerHTML = `<div id="trade"><div class="resultset">${row('one')}${row('two')}</div></div>`
-    useResultsStore.setState({ pinned: [], disabled: ['equivalent-pricings'] })
+    usePinnedStore.setState({ pinned: [] })
+    useSettingsStore.setState({ disabled: ['equivalent-pricings'] })
 })
 it('converts chaos to divine on PoE2 and normalizes primary currency rates', async () => {
     window.history.replaceState({}, '', '/trade2/search/Standard/test')
@@ -36,7 +38,7 @@ it('converts chaos to divine on PoE2 and normalizes primary currency rates', asy
             ],
         })) as typeof browser.runtime.sendMessage
     )
-    useResultsStore.setState({ disabled: [] })
+    useSettingsStore.setState({ disabled: [] })
     stop = startResultsController(new QueryClient())
     await settle()
     expect(document.querySelector('.bt-equivalent-pricings')?.textContent).toBe('= 1 × ')
@@ -87,20 +89,38 @@ it('pins, unpins and clears snapshots when results reset', async () => {
     await settle()
     const button = document.querySelector<HTMLButtonElement>('.bt-pin-button')!
     button.click()
-    expect(useResultsStore.getState().pinned).toHaveLength(1)
+    expect(usePinnedStore.getState().pinned).toHaveLength(1)
     expect(button.textContent).toBe('Unpin')
     button.click()
-    expect(useResultsStore.getState().pinned).toHaveLength(0)
+    expect(usePinnedStore.getState().pinned).toHaveLength(0)
     button.click()
     document.querySelector('.resultset')!.replaceChildren()
     await settle()
-    expect(useResultsStore.getState().pinned).toHaveLength(0)
+    expect(usePinnedStore.getState().pinned).toHaveLength(0)
 })
 it('reapplies settings without duplicating controls', async () => {
     stop = startResultsController(new QueryClient())
     await settle()
-    useResultsStore.getState().toggle('maximum-sockets')
+    useSettingsStore.getState().toggle('maximum-sockets')
     await settle()
     expect(document.querySelectorAll('.bt-maximum-sockets')).toHaveLength(0)
     expect(document.querySelectorAll('.bt-pin-button')).toHaveLength(2)
+})
+it('highlights current item-mod markup that matches an active stat filter', async () => {
+    const mod = document.querySelector<HTMLElement>('.explicitMod')!
+    mod.className = 'item-mod item-mod--explicit'
+    mod.textContent = '+32 to Strength'
+    document
+        .querySelector('#trade')!
+        .insertAdjacentHTML(
+            'beforeend',
+            '<div class="search-advanced-pane"><div class="filter-group-body"><div class="filter"><div class="filter-title"><i class="mutate-type">explicit</i><span>+# to Strength</span></div></div></div></div>'
+        )
+    stop = startResultsController(new QueryClient())
+    await settle()
+    expect(
+        document
+            .querySelector('.item-mod--explicit')
+            ?.classList.contains('bt-highlight-stat-filters')
+    ).toBe(true)
 })

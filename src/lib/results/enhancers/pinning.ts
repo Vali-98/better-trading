@@ -1,5 +1,5 @@
 import { usePanelStore } from '../../../stores/panel'
-import { useResultsStore } from '../../../stores/results'
+import { usePinnedStore } from '../../../stores/pinned'
 import type { AddNode } from './types'
 
 export function addPinButton(row: HTMLElement, add: AddNode) {
@@ -10,7 +10,7 @@ export function addPinButton(row: HTMLElement, add: AddNode) {
     button.textContent = 'Pin'
     button.onclick = () => {
         const id = row.dataset.id!
-        const state = useResultsStore.getState()
+        const state = usePinnedStore.getState()
         if (state.pinned.some((item) => item.id === id)) {
             state.setPinned(state.pinned.filter((item) => item.id !== id))
             return

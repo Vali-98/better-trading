@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef } from 'react'
-import { useResultsStore } from '../stores/results'
+import { usePinnedStore } from '../stores/pinned'
 import { scrollToPinned } from '../lib/scrollToPinned'
 function Snapshot({ node }: { node: HTMLElement }) {
     const ref = useRef<HTMLSlotElement>(null)
@@ -18,7 +18,7 @@ function Snapshot({ node }: { node: HTMLElement }) {
     return <slot name={name} ref={ref} />
 }
 export function PinnedPanel() {
-    const { pinned, setPinned } = useResultsStore()
+    const { pinned, setPinned } = usePinnedStore()
     return (
         <section>
             {!pinned.length && <p>No pinned items.</p>}

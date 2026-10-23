@@ -1,0 +1,52 @@
+/* BETTER TRADING: Stat filter meta tag colour palette */
+[data-bt-meta-tag-label] {
+    font-size: 0;
+}
+[data-bt-meta-tag-label]::before {
+    content: attr(data-bt-meta-tag-label);
+    display: inline-block;
+    margin-right: 5px;
+    padding: 1px 4px 1px 3px;
+    border-radius: 3px;
+    background: #454b54;
+    color: #f1f3f5;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.35;
+    text-transform: uppercase;
+    vertical-align: 1px;
+}
+[data-bt-meta-tag-label]::after {
+    content: attr(data-bt-meta-stat);
+    font-size: 13px;
+}
+[data-bt-meta-tag-theme='pseudo']::before {
+    padding: 0 3px;
+    border: 1px solid #515862;
+    background: transparent;
+    color: #b9c0c8;
+}
+[data-bt-meta-tag-theme='explicit']::before {
+    background: #3d4249;
+}
+[data-bt-meta-tag-theme='implicit']::before {
+    background: #4e6892;
+}
+[data-bt-meta-tag-theme='enchant']::before {
+    background: #59426d;
+}
+[data-bt-meta-tag-theme='fractured']::before {
+    background: #385875;
+}
+[data-bt-meta-tag-theme='red']::before {
+    background: #713e45;
+}
+[data-bt-meta-tag-theme='mercenary']::before {
+    background: #674a36;
+}
+[data-bt-meta-tag-theme='delve']::before {
+    background: #706233;
+}
+[data-bt-meta-tag-theme='sanctum']::before {
+    background: #365d49;
+}

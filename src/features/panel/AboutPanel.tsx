@@ -2,24 +2,33 @@ import type { ReactNode } from 'react'
 import { Icon } from '../../components/Icon'
 import { ReleaseHistory } from '../Changelog'
 import { currentRelease } from '../../lib/releases'
-import { enhancerIds, useResultsStore } from '../../stores/results'
+import { enhancerIds, useSettingsStore } from '../../stores/settings'
+import { searchEnhancementIds } from '../../stores/settings'
 
 const enhancerLabels = {
     'equivalent-pricings': 'Equivalent pricings (powered by poe.ninja)',
     'highlight-stat-filters': 'Highlight searched mods',
-    'maximum-sockets': 'Warning for armors that cannot be 6-socketed',
-    'regroup-similars': 'Regroup similar results',
+    // Hidden and disabled by default: less useful in modern PoE.
+    // 'maximum-sockets': 'Warning for armors that cannot be 6-socketed',
+    // 'regroup-similars': 'Regroup similar results',
+}
+
+const searchEnhancementLabels = {
+    'coloured-meta-tags': 'Coloured meta tags',
+    'default-stat-filter-tilde': 'Auto fill stat filter to tilde',
 }
 
 export function AboutPanel() {
-    const { disabled, toggle } = useResultsStore()
+    const { disabled, toggle } = useSettingsStore()
+    const { disabled: disabledSearchEnhancements, toggle: toggleSearchEnhancement } =
+        useSettingsStore()
     return (
         <section className="bt-about">
             <ReleaseHistory />
             <InfoBox title="Better Trading">
                 <p>A better trading experience for Path of Exile and Path of Exile 2.</p>
             </InfoBox>
-            <InfoBox title="Enabled item result enhancers">
+            <InfoBox title="Settings">
                 {enhancerIds.map((id) => (
                     <label className="bt-setting-checkbox" key={id}>
                         <input
@@ -28,6 +37,16 @@ export function AboutPanel() {
                             onChange={() => toggle(id)}
                         />{' '}
                         {enhancerLabels[id]}
+                    </label>
+                ))}
+                {searchEnhancementIds.map((id) => (
+                    <label className="bt-setting-checkbox" key={id}>
+                        <input
+                            type="checkbox"
+                            checked={!disabledSearchEnhancements.includes(id)}
+                            onChange={() => toggleSearchEnhancement(id)}
+                        />{' '}
+                        {searchEnhancementLabels[id]}
                     </label>
                 ))}
             </InfoBox>

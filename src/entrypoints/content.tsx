@@ -4,6 +4,7 @@ import { ContentApp } from '../app/ContentApp'
 import '../styles/panel.css'
 import { startPageController } from '../lib/pageController'
 import { startResultsController } from '../lib/resultsController'
+import { startSearchEnhancements } from '../lib/searchEnhancements'
 import { browser } from 'wxt/browser'
 
 export default defineContentScript({
@@ -24,6 +25,7 @@ export default defineContentScript({
         const stopPage = startPageController(queryClient)
         ctx.onInvalidated(stopPage)
         ctx.onInvalidated(startResultsController(queryClient))
+        ctx.onInvalidated(startSearchEnhancements())
         const ui = await createShadowRootUi(ctx, {
             name: 'better-trading',
             position: 'inline',
