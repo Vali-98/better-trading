@@ -1,0 +1,5 @@
+node_modules/
+.wxt/
+.output/
+*.log
+.dev-profiles/
