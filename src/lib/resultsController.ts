@@ -6,6 +6,7 @@ import { getCurrencyRatios } from './results/currencyRatios'
 import { createSimilarGroupState, regroupSimilarRows } from './results/similarGroups'
 import { addEquivalentPrices } from './results/enhancers/equivalentPricing'
 import { addPinButton } from './results/enhancers/pinning'
+import { addItemLinks } from './results/enhancers/itemLinks'
 import { addSocketWarning } from './results/enhancers/socketWarning'
 import {
     clearHighlightedStats,
@@ -95,6 +96,8 @@ export function startResultsController(client: QueryClient) {
                         disposers.push(() => node.remove())
                     }
                     addPinButton(row, add)
+                    if (!disabled.includes('item-reference-links'))
+                        addItemLinks(row, context.version, add)
                     if (!disabled.includes('maximum-sockets') && context.version === '1')
                         addSocketWarning(row, add)
                     if (!disabled.includes('equivalent-pricings'))

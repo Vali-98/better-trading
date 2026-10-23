@@ -18,6 +18,8 @@ const metaTagThemes: Record<string, string> = {
 }
 const editedStatFilterInputs = new WeakSet<HTMLInputElement>()
 const statFilterInputSelector = 'input.multiselect__input[placeholder="+ Add Stat Filter"]'
+const searchFilterInputSelector = 'input.multiselect__input[placeholder="Search Items..."]'
+const tildeInputSelector = `${statFilterInputSelector},${searchFilterInputSelector}`
 
 function decorateMetaTag(option: HTMLElement) {
     option.querySelectorAll<HTMLElement>('[data-bt-meta-tag-label]').forEach((tag) => {
@@ -87,7 +89,7 @@ export function startSearchEnhancements() {
         const input = event.target
         if (
             input instanceof HTMLInputElement &&
-            input.matches(statFilterInputSelector) &&
+            input.matches(tildeInputSelector) &&
             input.dataset.btApplyingTilde === undefined
         )
             editedStatFilterInputs.add(input)
@@ -96,8 +98,14 @@ export function startSearchEnhancements() {
         const input = event.target
         if (
             !(input instanceof HTMLInputElement) ||
-            !input.matches(statFilterInputSelector) ||
-            useSettingsStore.getState().disabled.includes('default-stat-filter-tilde')
+            !input.matches(tildeInputSelector) ||
+            useSettingsStore
+                .getState()
+                .disabled.includes(
+                    input.matches(statFilterInputSelector)
+                        ? 'default-stat-filter-tilde'
+                        : 'default-search-filter-tilde'
+                )
         )
             return
         const timer = setTimeout(() => {
@@ -106,7 +114,13 @@ export function startSearchEnhancements() {
         }, 0)
         tildeTimers.add(timer)
     }
+    const onTildeInputBlur = (event: Event) => {
+        const input = event.target
+        if (input instanceof HTMLInputElement && input.matches(tildeInputSelector))
+            editedStatFilterInputs.delete(input)
+    }
     document.addEventListener('input', onInput, true)
+    document.addEventListener('blur', onTildeInputBlur, true)
     document.addEventListener('click', onStatFilterOpen, true)
     const unsubscribe = useSettingsStore.subscribe(schedule)
     process()
@@ -114,6 +128,7 @@ export function startSearchEnhancements() {
         clearTimeout(scheduled)
         observer.disconnect()
         document.removeEventListener('input', onInput, true)
+        document.removeEventListener('blur', onTildeInputBlur, true)
         document.removeEventListener('click', onStatFilterOpen, true)
         tildeTimers.forEach(clearTimeout)
         unsubscribe()
