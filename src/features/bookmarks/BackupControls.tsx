@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import { Icon } from '../../components/Icon'
-import { useQueryClient } from '@tanstack/react-query'
-import { backup, importFolders } from '../../lib/bookmarks/export'
+import { downloadBackup, readBackupFile } from '../../lib/bookmarks/fileTransfer'
 import { Dialog } from '../../components/Dialog'
+import { useBackupRestore } from './hooks/useBackupRestore'
 
 export function BackupControls({
     importing,
@@ -11,25 +11,12 @@ export function BackupControls({
     importing: boolean
     closeImport: () => void
 }) {
-    const client = useQueryClient()
-    const [error, setError] = useState('')
-    const [busy, setBusy] = useState(false)
     const fileInput = useRef<HTMLInputElement>(null)
     const [code, setCode] = useState('')
-    async function restore(text: string, full: boolean) {
-        setBusy(true)
-        setError('')
-        try {
-            await importFolders(text, full)
-            await client.invalidateQueries({ queryKey: ['bookmarks'] })
-            closeImport()
-            setCode('')
-        } catch {
-            setError('Unable to import. Check that the file or folder code is valid.')
-        } finally {
-            setBusy(false)
-        }
-    }
+    const { busy, error, setError, restore } = useBackupRestore(() => {
+        closeImport()
+        setCode('')
+    })
     return (
         <div className="bt-backup-tools">
             <span className="bt-backup-title">Backup Tools</span>
@@ -61,14 +48,7 @@ export function BackupControls({
                 disabled={busy}
                 onClick={async () => {
                     try {
-                        const url = URL.createObjectURL(
-                            new Blob([await backup()], { type: 'text/plain' })
-                        )
-                        const link = document.createElement('a')
-                        link.href = url
-                        link.download = 'better-trading-backup.txt'
-                        link.click()
-                        setTimeout(() => URL.revokeObjectURL(url), 1000)
+                        await downloadBackup()
                     } catch {
                         setError('Unable to generate backup.')
                     }
@@ -98,8 +78,7 @@ export function BackupControls({
                 onChange={(event) => {
                     const file = event.target.files?.[0]
                     if (file)
-                        void file
-                            .text()
+                        void readBackupFile(file)
                             .then((text) => restore(text, true))
                             .catch(() => setError('Unable to read backup.'))
                     event.target.value = ''

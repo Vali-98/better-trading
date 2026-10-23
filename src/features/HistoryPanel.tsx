@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getHistory } from '../lib/pageController'
+import { getHistory } from '../lib/history'
 import { setValue } from '../lib/storage'
 export function HistoryPanel() {
     const client = useQueryClient()

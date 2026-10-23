@@ -1,10 +1,10 @@
 import { create } from 'zustand'
 
-type Page = 'bookmarks' | 'history' | 'pinned-items'
+export type PanelPage = 'bookmarks' | 'history' | 'pinned-items'
 interface PanelState {
-    page: Page
+    page: PanelPage
     collapsed: boolean
-    setPage: (page: Page) => void
+    setPage: (page: PanelPage) => void
     toggleCollapsed: () => void
 }
 
@@ -13,7 +13,7 @@ export const usePanelStore = create<PanelState>((set) => ({
         localStorage.getItem('bt-current-page') ?? ''
     )
         ? localStorage.getItem('bt-current-page')
-        : 'bookmarks') as Page,
+        : 'bookmarks') as PanelPage,
     collapsed: Boolean(localStorage.getItem('bt-side-panel-collapsed')),
     setPage: (page) => {
         localStorage.setItem('bt-current-page', page)
