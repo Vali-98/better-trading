@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getTrades, saveTrades, type Trade } from '../../../lib/bookmarks/storage'
+import { bookmarkQueryKeys } from '../../../lib/bookmarks/queryKeys'
 
 export function useFolderTrades(folderId: string) {
     const client = useQueryClient()
-    const queryKey = ['bookmarks', 'trades', folderId]
+    const queryKey = bookmarkQueryKeys.trades(folderId)
     const trades = useQuery({ queryKey, queryFn: () => getTrades(folderId) })
     const mutation = useMutation({
         mutationFn: (items: Trade[]) => saveTrades(folderId, items),

@@ -13,13 +13,13 @@ import { TradeList } from './TradeList'
 type Props = {
     folder: Folder
     expanded: boolean
-    toggle: () => void
-    edit: () => void
-    archive: () => void
-    remove: () => Promise<void>
+    onToggle: () => void
+    onEdit: () => void
+    onArchive: () => void
+    onRemove: () => Promise<void>
 }
 
-export function FolderView({ folder, expanded, toggle, edit, archive, remove }: Props) {
+export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRemove }: Props) {
     const [deleteFolder, setDeleteFolder] = useState(false)
     const [draft, setDraft] = useState<Trade | null>(null)
     const [deleting, setDeleting] = useState<Trade | null>(null)
@@ -52,9 +52,9 @@ export function FolderView({ folder, expanded, toggle, edit, archive, remove }: 
             <FolderHeader
                 folder={folder}
                 expanded={expanded}
-                onToggle={toggle}
-                onEdit={edit}
-                onArchive={archive}
+                onToggle={onToggle}
+                onEdit={onEdit}
+                onArchive={onArchive}
                 onDelete={() => setDeleteFolder(true)}
                 onExport={() => setExported(serialize(folder, items))}
                 canExport={Boolean(trades.data)}
@@ -142,7 +142,7 @@ export function FolderView({ folder, expanded, toggle, edit, archive, remove }: 
                     <button
                         className="bt-button"
                         onClick={() =>
-                            void remove().catch(() => setError('Unable to delete folder.'))
+                            void onRemove().catch(() => setError('Unable to delete folder.'))
                         }>
                         Delete folder
                     </button>

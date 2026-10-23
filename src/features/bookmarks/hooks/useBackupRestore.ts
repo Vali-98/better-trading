@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { importFolders } from '../../../lib/bookmarks/export'
+import { bookmarkQueryKeys } from '../../../lib/bookmarks/queryKeys'
 
 export function useBackupRestore(onSuccess: () => void) {
     const client = useQueryClient()
@@ -11,7 +12,7 @@ export function useBackupRestore(onSuccess: () => void) {
         setError('')
         try {
             await importFolders(text, full)
-            await client.invalidateQueries({ queryKey: ['bookmarks'] })
+            await client.invalidateQueries({ queryKey: bookmarkQueryKeys.all })
             onSuccess()
         } catch {
             setError('Unable to import. Check that the file or folder code is valid.')

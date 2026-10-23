@@ -4,6 +4,7 @@ import { browser } from 'wxt/browser'
 import { Icon } from '../../components/Icon'
 import { SortableItem, SortableList } from '../../components/Sortable'
 import { currentLocation, getFolders, saveFolders, type Folder } from '../../lib/bookmarks/storage'
+import { bookmarkQueryKeys } from '../../lib/bookmarks/queryKeys'
 import { BackupControls } from './BackupControls'
 import { reordered } from './bookmarkUtils'
 import { FolderEditorDialog } from './components/FolderEditorDialog'
@@ -12,7 +13,7 @@ import { useExpandedFolders } from './hooks/useExpandedFolders'
 
 export function BookmarksPanel() {
     const client = useQueryClient()
-    const folders = useQuery({ queryKey: ['bookmarks', 'folders'], queryFn: getFolders })
+    const folders = useQuery({ queryKey: bookmarkQueryKeys.folders(), queryFn: getFolders })
     const [archived, setArchived] = useState(false)
     const [importing, setImporting] = useState(false)
     const [editing, setEditing] = useState<Folder | null>(null)
@@ -20,16 +21,16 @@ export function BookmarksPanel() {
     const mutation = useMutation({
         mutationFn: saveFolders,
         onMutate: async (items) => {
-            await client.cancelQueries({ queryKey: ['bookmarks', 'folders'] })
-            client.setQueryData(['bookmarks', 'folders'], items)
+            await client.cancelQueries({ queryKey: bookmarkQueryKeys.folders() })
+            client.setQueryData(bookmarkQueryKeys.folders(), items)
         },
-        onError: () => client.invalidateQueries({ queryKey: ['bookmarks', 'folders'] }),
-        onSuccess: () => client.invalidateQueries({ queryKey: ['bookmarks'] }),
+        onError: () => client.invalidateQueries({ queryKey: bookmarkQueryKeys.folders() }),
+        onSuccess: () => client.invalidateQueries({ queryKey: bookmarkQueryKeys.all }),
     })
     const reorderMutation = useMutation({
         mutationFn: saveFolders,
         meta: { silentSuccess: true },
-        onSettled: () => client.invalidateQueries({ queryKey: ['bookmarks', 'folders'] }),
+        onSettled: () => client.invalidateQueries({ queryKey: bookmarkQueryKeys.folders() }),
     })
     const allFolders = folders.data ?? []
     const visibleFolders = allFolders.filter(
@@ -75,7 +76,7 @@ export function BookmarksPanel() {
                         const updated = allFolders.map((folder) =>
                             visibleFolders.includes(folder) ? ordered[index++] : folder
                         )
-                        client.setQueryData(['bookmarks', 'folders'], updated)
+                        client.setQueryData(bookmarkQueryKeys.folders(), updated)
                         reorderMutation.mutate(updated)
                     }}>
                     {visibleFolders.map((folder) => (
@@ -83,9 +84,9 @@ export function BookmarksPanel() {
                             <FolderView
                                 folder={folder}
                                 expanded={expanded.includes(folder.id)}
-                                toggle={() => toggle(folder.id)}
-                                edit={() => setEditing({ ...folder })}
-                                archive={() =>
+                                onToggle={() => toggle(folder.id)}
+                                onEdit={() => setEditing({ ...folder })}
+                                onArchive={() =>
                                     mutation.mutate([
                                         ...allFolders.filter((item) => item.id !== folder.id),
                                         {
@@ -96,7 +97,7 @@ export function BookmarksPanel() {
                                         },
                                     ])
                                 }
-                                remove={async () => {
+                                onRemove={async () => {
                                     await browser.storage.local.remove(
                                         `bookmark-trades--${folder.id}`
                                     )
