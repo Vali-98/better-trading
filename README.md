@@ -48,6 +48,19 @@ Run `npm run check:changelog` to validate. Build and package commands run this
 check automatically. Only the current release notes are bundled with the
 extension and shown in the update dialog and information panel.
 
+## Publishing a release
+
+Create and push a matching annotated version tag after merging the release
+commit, for example `git tag -a v0.1.0 -m "v0.1.0"` then `git push origin
+v0.1.0`. The release workflow validates that the tag equals `v` plus the
+`package.json` version, validates the corresponding changelog, packages Chrome
+and Firefox archives, and publishes a GitHub release.
+
+Git hooks are installed automatically by `npm install`. A pre-commit check
+validates staged `package.json` version changes; a pre-push check validates
+version tags. The workflow repeats both checks, so release validation cannot be
+bypassed by skipping local hooks.
+
 ## Credits
 
 This form is maintained by [Vali-98](https://github.com/Vali-98).

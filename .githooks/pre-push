@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+set -eu
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    case "$local_ref" in
+        refs/tags/v*)
+            tag=${local_ref#refs/tags/}
+            npm run check:release -- "$tag"
+            npm run check:changelog
+            ;;
+    esac
+done

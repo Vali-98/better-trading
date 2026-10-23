@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "check:changelog": "tsx scripts/check-changelog.ts",
+        "check:release": "node scripts/check-release.mjs",
         "prebuild": "npm run check:changelog",
         "prebuild:firefox": "npm run check:changelog",
         "prezip": "npm run check:changelog",
@@ -19,7 +20,8 @@
         "test": "vitest run",
         "format": "prettier --write . --ignore-unknown",
         "format:check": "prettier --check . --ignore-unknown",
-        "postinstall": "wxt prepare"
+        "postinstall": "wxt prepare",
+        "prepare": "node scripts/setup-git-hooks.mjs"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",

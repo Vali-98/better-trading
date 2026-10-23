@@ -1,0 +1,33 @@
+name: Release extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - id: version
+        run: echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - run: npm run check:release -- "${GITHUB_REF_NAME}"
+      - run: npm run check:changelog
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run zip
+      - run: npm run zip:firefox
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: changelogs/${{ steps.version.outputs.value }}.md
+          files: .output/better-trading-*.zip

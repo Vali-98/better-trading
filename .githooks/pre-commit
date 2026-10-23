@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+set -eu
+
+if git diff --cached --name-only | grep -qx 'package.json'; then
+    npm run check:release
+    npm run check:changelog
+fi
