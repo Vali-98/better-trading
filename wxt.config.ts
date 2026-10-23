@@ -1,10 +1,9 @@
-import { defineConfig } from 'wxt'
-import tailwindcss from '@tailwindcss/vite'
+import type { UserConfig } from 'wxt'
 import { resolve } from 'node:path'
 import { readFileSync } from 'node:fs'
 import { version } from './package.json'
 
-export default defineConfig({
+export default {
     srcDir: 'src',
     modules: ['@wxt-dev/module-react'],
     zip: {
@@ -39,19 +38,22 @@ export default defineConfig({
             },
         },
     },
-    vite: () => ({
-        plugins: [
-            tailwindcss(),
-            {
-                name: 'current-changelog',
-                resolveId(id) {
-                    if (id === '#current-changelog?raw') return '\0current-changelog'
+    vite: async () => {
+        const { default: tailwindcss } = await import('@tailwindcss/vite')
+        return {
+            plugins: [
+                tailwindcss(),
+                {
+                    name: 'current-changelog',
+                    resolveId(id) {
+                        if (id === '#current-changelog?raw') return '\0current-changelog'
+                    },
+                    load(id) {
+                        if (id === '\0current-changelog')
+                            return `export default ${JSON.stringify(readFileSync(resolve(`changelogs/${version}.md`), 'utf8'))}`
+                    },
                 },
-                load(id) {
-                    if (id === '\0current-changelog')
-                        return `export default ${JSON.stringify(readFileSync(resolve(`changelogs/${version}.md`), 'utf8'))}`
-                },
-            },
-        ],
-    }),
-})
+            ],
+        }
+    },
+} satisfies UserConfig

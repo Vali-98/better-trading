@@ -1,6 +1,7 @@
 node_modules/
 .wxt/
 output/
+.output/
 *.log
 .dev-profiles/
 .env*
