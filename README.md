@@ -52,7 +52,7 @@ extension and shown in the update dialog and information panel.
 
 This form is maintained by [Vali-98](https://github.com/Vali-98).
 Better Trading was originally created by [InfaMc](https://github.com/pboutin)
-and previously maintained by [brosmike](https://github.com/dbjorge). 
+and previously maintained by [brosmike](https://github.com/dbjorge).
 
 [Original repository](https://github.com/poe-world/better-trading) ·
 [Support development on Ko-fi](https://ko-fi.com/W7W7X8T7W)

@@ -1,800 +1,800 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 .bt-release-notes {
-  line-height: 1.5;
-  overflow-wrap: anywhere;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 .bt-release-notes h1 {
-  font:
-    20px FontinSmallcaps,
-    serif;
-  margin: 8px 0 12px;
+    font:
+        20px FontinSmallcaps,
+        serif;
+    margin: 8px 0 12px;
 }
 .bt-release-notes h2,
 .bt-panel .bt-release-notes h2 {
-  font:
-    16px FontinSmallcaps,
-    serif;
-  margin: 14px 0 6px;
+    font:
+        16px FontinSmallcaps,
+        serif;
+    margin: 14px 0 6px;
 }
 .bt-release-notes ul,
 .bt-release-notes ol {
-  padding-left: 20px;
-  margin: 6px 0 10px;
+    padding-left: 20px;
+    margin: 6px 0 10px;
 }
 .bt-release-notes ul {
-  list-style: disc outside;
+    list-style: disc outside;
 }
 .bt-release-notes ol {
-  list-style: decimal outside;
+    list-style: decimal outside;
 }
 .bt-release-notes li {
-  display: list-item;
-  margin: 4px 0;
+    display: list-item;
+    margin: 4px 0;
 }
 .bt-release-notes li::marker {
-  color: #c6a16a;
+    color: #c6a16a;
 }
 .bt-release-notes p {
-  margin: 6px 0;
+    margin: 6px 0;
 }
 .bt-release-notes a {
-  color: #c6a16a !important;
-  text-decoration: underline !important;
+    color: #c6a16a !important;
+    text-decoration: underline !important;
 }
 
 :host {
-  color-scheme: dark;
+    color-scheme: dark;
 }
 
 .bt-panel {
-  box-sizing: border-box;
-  position: fixed;
-  z-index: 1000;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
-  width: 400px;
-  padding: 5px 10px;
-  background: rgba(10, 10, 10, 0.8);
-  color: white;
-  font:
-    13px Verdana,
-    Arial,
-    Helvetica,
-    sans-serif;
-  transition: right 0.2s ease;
+    box-sizing: border-box;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    width: 400px;
+    padding: 5px 10px;
+    background: rgba(10, 10, 10, 0.8);
+    color: white;
+    font:
+        13px Verdana,
+        Arial,
+        Helvetica,
+        sans-serif;
+    transition: right 0.2s ease;
 }
 .bt-panel.collapsed {
-  right: -400px;
+    right: -400px;
 }
 .bt-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 5px 0 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0 10px;
 }
 .bt-brand {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
 }
 .bt-brand img,
 .bt-expand img {
-  height: 30px;
+    height: 30px;
 }
 .bt-brand span {
-  margin-left: 10px;
-  font:
-    20px FontinSmallcaps,
-    serif;
+    margin-left: 10px;
+    font:
+        20px FontinSmallcaps,
+        serif;
 }
 .bt-header-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  font-size: 28px;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    font-size: 28px;
+    cursor: pointer;
 }
 .bt-tabs {
-  display: flex;
-  margin-bottom: 10px;
+    display: flex;
+    margin-bottom: 10px;
 }
 .bt-tabs button {
-  flex: 1;
-  padding: 5px 0;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
+    flex: 1;
+    padding: 5px 0;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
 }
 .bt-tabs button:hover {
-  background: rgba(90, 56, 6, 0.2);
+    background: rgba(90, 56, 6, 0.2);
 }
-.bt-tabs button[aria-pressed="true"] {
-  border-color: #8a5609;
+.bt-tabs button[aria-pressed='true'] {
+    border-color: #8a5609;
 }
 .bt-expand {
-  position: fixed;
-  top: 50px;
-  right: 0;
-  z-index: 1000;
-  display: none;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 10px;
-  border: 1px solid #4c4c7d;
-  background: #0f304d;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
+    position: fixed;
+    top: 50px;
+    right: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 10px;
+    border: 1px solid #4c4c7d;
+    background: #0f304d;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
 }
 .bt-expand.visible {
-  display: flex;
+    display: flex;
 }
 .bt-panel section details {
-  padding: 0;
-  border: 1px solid #4c4c7d;
-  border-radius: 0;
-  margin: 10px 0;
+    padding: 0;
+    border: 1px solid #4c4c7d;
+    border-radius: 0;
+    margin: 10px 0;
 }
 .bt-panel section summary {
-  padding: 5px 10px;
-  background: #0f304d;
-  color: white;
-  font:
-    15px FontinSmallcaps,
-    serif;
+    padding: 5px 10px;
+    background: #0f304d;
+    color: white;
+    font:
+        15px FontinSmallcaps,
+        serif;
 }
 .bt-panel section button {
-  border-radius: 0;
-  border-color: #8a5609;
-  background: #5a3806;
-  min-height: 32px;
-  font:
-    13px FontinSmallcaps,
-    serif;
+    border-radius: 0;
+    border-color: #8a5609;
+    background: #5a3806;
+    min-height: 32px;
+    font:
+        13px FontinSmallcaps,
+        serif;
 }
 .bt-panel section button:hover {
-  background: #724708;
+    background: #724708;
 }
 .bt-panel section details > div {
-  padding: 5px;
+    padding: 5px;
 }
 .bt-panel section a {
-  color: white;
-  font-family: FontinSmallcaps, serif;
-  text-decoration: none;
+    color: white;
+    font-family: FontinSmallcaps, serif;
+    text-decoration: none;
 }
 .bt-button {
-  display: inline-flex;
-  gap: 5px;
-  justify-content: center;
-  align-items: center;
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid #8a5609;
-  background: #5a3806;
-  color: white;
-  font:
-    13px FontinSmallcaps,
-    serif;
-  cursor: pointer;
+    display: inline-flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid #8a5609;
+    background: #5a3806;
+    color: white;
+    font:
+        13px FontinSmallcaps,
+        serif;
+    cursor: pointer;
 }
 .bt-button:disabled {
-  opacity: 0.5;
-  cursor: default;
+    opacity: 0.5;
+    cursor: default;
 }
 .bt-dialog {
-  position: fixed;
-  inset: 0;
-  margin: auto;
-  max-height: calc(100dvh - 40px);
-  overflow-y: auto;
-  width: 500px;
-  max-width: calc(100vw - 40px);
-  padding: 20px;
-  border: 1px solid #4c4c7d;
-  background: #101010;
-  color: white;
-  font:
-    13px Verdana,
-    Arial,
-    sans-serif;
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    width: 500px;
+    max-width: calc(100vw - 40px);
+    padding: 20px;
+    border: 1px solid #4c4c7d;
+    background: #101010;
+    color: white;
+    font:
+        13px Verdana,
+        Arial,
+        sans-serif;
 }
 .bt-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.7);
 }
 .bt-dialog header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
 .bt-dialog h2 {
-  font:
-    20px FontinSmallcaps,
-    serif;
+    font:
+        20px FontinSmallcaps,
+        serif;
 }
 .bt-dialog header button {
-  cursor: pointer;
-  font-size: 22px;
+    cursor: pointer;
+    font-size: 22px;
 }
 .bt-dialog label {
-  display: block;
-  margin: 10px 0;
+    display: block;
+    margin: 10px 0;
 }
 .bt-dialog input,
 .bt-dialog select,
 .bt-dialog textarea {
-  display: block;
-  width: 100%;
-  border: 0;
-  background: #1e2124;
-  color: white;
-  padding: 8px;
-  margin: 5px 0;
+    display: block;
+    width: 100%;
+    border: 0;
+    background: #1e2124;
+    color: white;
+    padding: 8px;
+    margin: 5px 0;
 }
 .bt-dialog textarea {
-  min-height: 130px;
+    min-height: 130px;
 }
 .bt-dialog footer {
-  display: flex;
-  gap: 5px;
-  justify-content: flex-end;
-  margin-top: 15px;
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end;
+    margin-top: 15px;
 }
 .bt-panel section .bt-menu {
-  position: relative;
-  border: 0;
-  margin: 0;
-  padding: 0;
+    position: relative;
+    border: 0;
+    margin: 0;
+    padding: 0;
 }
 .bt-panel section .bt-menu summary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  padding: 5px;
-  list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: transparent;
+    padding: 5px;
+    list-style: none;
 }
 .bt-panel section .bt-menu > div {
-  position: absolute;
-  z-index: 10;
-  right: 0;
-  min-width: 180px;
-  background: #161616;
-  border: 1px solid #4c4c7d;
-  padding: 0;
+    position: absolute;
+    z-index: 10;
+    right: 0;
+    min-width: 180px;
+    background: #161616;
+    border: 1px solid #4c4c7d;
+    padding: 0;
 }
 .bt-panel section .bt-menu button,
 .bt-panel section .bt-menu a {
-  display: block;
-  width: 100%;
-  border: 0;
-  background: transparent;
-  text-align: left;
-  padding: 8px;
-  white-space: nowrap;
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    padding: 8px;
+    white-space: nowrap;
 }
 .bt-panel section .bt-menu button:hover,
 .bt-panel section .bt-menu a:hover {
-  background: #5a3806;
+    background: #5a3806;
 }
 .bt-history-link {
-  display: block;
-  min-width: 0;
-  max-width: 100%;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  padding: 8px;
-  border-bottom: 1px solid #373737;
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    padding: 8px;
+    border-bottom: 1px solid #373737;
 }
 .bt-history-link small {
-  display: block;
-  color: #7a7a7a;
-  font:
-    10px Verdana,
-    sans-serif;
-  margin-top: 4px;
+    display: block;
+    color: #7a7a7a;
+    font:
+        10px Verdana,
+        sans-serif;
+    margin-top: 4px;
 }
 .bt-kofi-button {
-  display: block;
-  height: 36px;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  margin-top: 10px;
-  border: 0;
+    display: block;
+    height: 36px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    margin-top: 10px;
+    border: 0;
 }
-.bt-github-link { display:inline-flex;align-items:center;gap:6px; }
+.bt-github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
 .bt-pinned-card {
-  border: 1px solid #4c4c7d;
-  margin: 10px 0;
-  padding: 0;
-  background: #000;
+    border: 1px solid #4c4c7d;
+    margin: 10px 0;
+    padding: 0;
+    background: #000;
 }
 .bt-pinned-actions {
-  display: flex;
-  gap: 5px;
-  padding: 10px;
-  background: #000;
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+    background: #000;
 }
 .bt-panel section .bt-pinned-actions .bt-button {
-  border-color: #4c4c7d;
-  background: #0f304d;
+    border-color: #4c4c7d;
+    background: #0f304d;
 }
 .bt-panel section .bt-pinned-actions .bt-button:hover {
-  background: #153f64;
+    background: #153f64;
 }
 .bt-pinned-actions > button:first-child {
-  flex: 1;
+    flex: 1;
 }
 .bt-pinned-card img {
-  max-width: 100%;
+    max-width: 100%;
 }
 .bt-notice {
-  color: #aaa;
-  padding: 10px 0;
-  font-size: 11px;
+    color: #aaa;
+    padding: 10px 0;
+    font-size: 11px;
 }
 .bt-panel h2 {
-  font:
-    18px FontinSmallcaps,
-    serif;
-  margin: 15px 0 10px;
+    font:
+        18px FontinSmallcaps,
+        serif;
+    margin: 15px 0 10px;
 }
 .bt-folder {
-  border: 1px solid #4c4c7d;
-  margin: 10px 0;
+    border: 1px solid #4c4c7d;
+    margin: 10px 0;
 }
 .bt-folder-header {
-  display: flex;
-  align-items: center;
-  background: #0f304d;
-  min-height: 34px;
-  padding: 2px 5px;
-  gap: 3px;
+    display: flex;
+    align-items: center;
+    background: #0f304d;
+    min-height: 34px;
+    padding: 2px 5px;
+    gap: 3px;
 }
 .bt-panel section .bt-folder-header button {
-  background: transparent;
-  border: 0;
+    background: transparent;
+    border: 0;
 }
 .bt-panel section .bt-folder-header .bt-folder-title {
-  font-family: FontinSmallcaps, serif;
-  font-size: 15px;
-  font-weight: 400;
-  line-height: normal;
+    font-family: FontinSmallcaps, serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: normal;
 }
 .bt-folder-title {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  text-align: left;
-  min-width: 0;
-  padding: 4px 5px;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    text-align: left;
+    min-width: 0;
+    padding: 4px 5px;
+    gap: 8px;
 }
 .bt-folder-title:not(:disabled)::after {
-  content: "";
-  flex: 0 0 1px;
-  width: 1px;
-  height: 15px;
-  margin-left: 5px;
-  background: rgba(255, 255, 255, 0.16);
+    content: '';
+    flex: 0 0 1px;
+    width: 1px;
+    height: 15px;
+    margin-left: 5px;
+    background: rgba(255, 255, 255, 0.16);
 }
 .bt-menu summary .bt-icon {
-  width: 15px;
-  height: 15px;
+    width: 15px;
+    height: 15px;
 }
 .bt-folder-title span:first-of-type {
-  padding: 0 2px;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    padding: 0 2px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .bt-folder-title img {
-  height: 30px;
-  width: 30px;
-  object-fit: contain;
+    height: 30px;
+    width: 30px;
+    object-fit: contain;
 }
 .bt-drag {
-  cursor: grab;
+    cursor: grab;
 }
 .bt-flashes {
-  position: fixed;
-  bottom: 15px;
-  right: 10px;
-  width: 380px;
-  z-index: 1001;
-  pointer-events: none;
+    position: fixed;
+    bottom: 15px;
+    right: 10px;
+    width: 380px;
+    z-index: 1001;
+    pointer-events: none;
 }
 .bt-flashes > div {
-  margin-top: 5px;
-  padding: 10px;
-  border: 1px solid #5e9954;
-  background: #4b7e42;
-  color: #fff;
+    margin-top: 5px;
+    padding: 10px;
+    border: 1px solid #5e9954;
+    background: #4b7e42;
+    color: #fff;
 }
 .bt-flashes > div.error {
-  border-color: #6d2725;
-  background: #5a0a09;
+    border-color: #6d2725;
+    background: #5a0a09;
 }
 
 .bt-icon {
-  display: inline-block;
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vertical-align: middle;
+    display: inline-block;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: middle;
 }
 .bt-panel section .bt-dialog-close,
 .bt-dialog-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  min-height: 36px;
-  padding: 7px;
-  border: 0;
-  background: transparent;
-  color: #ccc;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 7px;
+    border: 0;
+    background: transparent;
+    color: #ccc;
+    cursor: pointer;
 }
 .bt-panel section .bt-dialog-close:hover,
 .bt-dialog-close:hover {
-  background: #373737;
-  color: #fff;
+    background: #373737;
+    color: #fff;
 }
 .bt-bookmark-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  gap: 5px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
 }
 .bt-folder-create-actions {
-  display: flex;
-  gap: 5px;
-  margin-top: 5px;
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
 }
 .bt-folder-create-actions > button {
-  flex: 1;
-  min-width: 0;
+    flex: 1;
+    min-width: 0;
 }
 .bt-folder-body {
-  display: flex;
-  flex-direction: column;
-  padding: 3px 0 0;
+    display: flex;
+    flex-direction: column;
+    padding: 3px 0 0;
 }
 .bt-trade-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border-top: 1px solid rgba(76, 76, 125, 0.4);
-  min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-top: 1px solid rgba(76, 76, 125, 0.4);
+    min-width: 0;
 }
 .bt-trade-row > a {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  padding: 6px 7px;
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    padding: 6px 7px;
 }
 .bt-panel section .bt-trade-row > .bt-drag,
 .bt-panel section .bt-folder-header > .bt-drag {
-  flex: 0 0 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  min-width: 30px;
-  height: 32px;
-  padding: 6px;
-  border: 0;
-  background: transparent;
-  color: #ddd;
-  cursor: grab;
-  touch-action: none;
+    flex: 0 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    min-width: 30px;
+    height: 32px;
+    padding: 6px;
+    border: 0;
+    background: transparent;
+    color: #ddd;
+    cursor: grab;
+    touch-action: none;
 }
 .bt-panel section .bt-trade-row {
-  padding-right: 5px;
+    padding-right: 5px;
 }
 .bt-register-trade {
-  align-self: stretch;
-  margin: 5px;
-  width: calc(100% - 10px);
+    align-self: stretch;
+    margin: 5px;
+    width: calc(100% - 10px);
 }
 .bt-completed {
-  font-size: 10px;
+    font-size: 10px;
 }
 .bt-panel section .bt-icon-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
-  gap: 8px;
-  max-height: none;
-  overflow-y: auto;
-  padding: 5px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+    gap: 8px;
+    max-height: none;
+    overflow-y: auto;
+    padding: 5px;
 }
 .bt-panel section .bt-icon-option {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-width: 0;
-  height: 46px;
-  padding: 4px;
-  border: 1px solid transparent;
-  background: transparent;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    padding: 4px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
 }
-.bt-panel section .bt-icon-option[aria-pressed="true"] {
-  border-color: #8a5609;
-  background: #5a3806;
+.bt-panel section .bt-icon-option[aria-pressed='true'] {
+    border-color: #8a5609;
+    background: #5a3806;
 }
 .bt-icon-option img {
-  max-width: 36px;
-  max-height: 36px;
-  object-fit: contain;
+    max-width: 36px;
+    max-height: 36px;
+    object-fit: contain;
 }
 .bt-backup-tools {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 15px;
-  padding: 10px 0;
-  border-top: 1px solid #373737;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+    padding: 10px 0;
+    border-top: 1px solid #373737;
 }
 .bt-backup-title {
-  margin-right: auto;
-  font:
-    14px FontinSmallcaps,
-    serif;
+    margin-right: auto;
+    font:
+        14px FontinSmallcaps,
+        serif;
 }
 .bt-panel section .bt-backup-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0 8px;
-  border: 1px solid #4c4c7d;
-  background: #0f304d;
-  min-height: 32px;
-  font-size: 12px;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 8px;
+    border: 1px solid #4c4c7d;
+    background: #0f304d;
+    min-height: 32px;
+    font-size: 12px;
+    cursor: pointer;
 }
 .bt-panel section .bt-backup-action:hover,
 .bt-panel section .bt-backup-action:focus-visible {
-  background: #153f64;
-  color: #fff8e1;
+    background: #153f64;
+    color: #fff8e1;
 }
 .bt-backup-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 18px;
-  width: 18px;
-  height: 18px;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 18px;
+    width: 18px;
+    height: 18px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: white;
 }
 .bt-backup-tools input[hidden] {
-  display: none;
+    display: none;
 }
-.bt-backup-tools > [role="alert"] {
-  flex-basis: 100%;
+.bt-backup-tools > [role='alert'] {
+    flex-basis: 100%;
 }
 .bt-info-box {
-  border: 1px solid #8a5609;
-  background: rgba(22, 22, 22, 0.7);
-  padding: 12px;
-  margin-bottom: 10px;
+    border: 1px solid #8a5609;
+    background: rgba(22, 22, 22, 0.7);
+    padding: 12px;
+    margin-bottom: 10px;
 }
 .bt-setting-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 10px 0;
-  font:
-    13px FontinSmallcaps,
-    serif;
-  cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 10px 0;
+    font:
+        13px FontinSmallcaps,
+        serif;
+    cursor: pointer;
 }
-.bt-setting-checkbox input[type="checkbox"] {
-  appearance: none;
-  box-sizing: border-box;
-  flex: 0 0 15px;
-  width: 15px;
-  height: 15px;
-  margin: 0;
-  border: 2px solid #634928;
-  border-radius: 0;
-  background-color: transparent;
-  background-position: center;
-  background-repeat: no-repeat;
-  cursor: pointer;
+.bt-setting-checkbox input[type='checkbox'] {
+    appearance: none;
+    box-sizing: border-box;
+    flex: 0 0 15px;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    border: 2px solid #634928;
+    border-radius: 0;
+    background-color: transparent;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
 }
-.bt-setting-checkbox input[type="checkbox"]:checked {
-  background-image: linear-gradient(white, white);
-  background-size: 7px 7px;
+.bt-setting-checkbox input[type='checkbox']:checked {
+    background-image: linear-gradient(white, white);
+    background-size: 7px 7px;
 }
-.bt-setting-checkbox input[type="checkbox"]:focus-visible {
-  outline: 2px solid #8a5609;
-  outline-offset: 3px;
+.bt-setting-checkbox input[type='checkbox']:focus-visible {
+    outline: 2px solid #8a5609;
+    outline-offset: 3px;
 }
 .bt-about-disclaimer {
-  margin: 40px 8px 0;
-  text-align: center;
-  color: #a18460;
-  font-size: 11px;
-  line-height: 1.5;
-  font-style: italic;
+    margin: 40px 8px 0;
+    text-align: center;
+    color: #a18460;
+    font-size: 11px;
+    line-height: 1.5;
+    font-style: italic;
 }
 .bt-about-version {
-  margin: 15px 0 10px;
-  text-align: center;
-  color: #a18460;
-  font-size: 11px;
+    margin: 15px 0 10px;
+    text-align: center;
+    color: #a18460;
+    font-size: 11px;
 }
 .bt-panel .bt-dialog h2 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 0;
-  font:
-    15px FontinSmallcaps,
-    serif;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font:
+        15px FontinSmallcaps,
+        serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 .bt-dialog-logo {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
 }
 .bt-dialog input:focus-visible,
 .bt-dialog textarea:focus-visible,
 .bt-dialog select:focus-visible {
-  outline: 1px solid #8a5609;
-  outline-offset: 2px;
+    outline: 1px solid #8a5609;
+    outline-offset: 2px;
 }
 .bt-panel section .bt-character-icon-grid {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 2px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 2px;
 }
 .bt-panel section .bt-item-icon-grid {
-  grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
 }
 .bt-panel section .bt-character-icon-grid .bt-icon-option {
-  height: 64px;
-  padding: 0;
+    height: 64px;
+    padding: 0;
 }
 .bt-character-icon-grid .bt-icon-option img {
-  width: 60px;
-  height: 60px;
-  max-width: 100%;
-  max-height: 60px;
+    width: 60px;
+    height: 60px;
+    max-width: 100%;
+    max-height: 60px;
 }
 .bt-panel section .bt-item-icon-grid .bt-icon-option {
-  height: 36px;
-  padding: 2px;
+    height: 36px;
+    padding: 2px;
 }
 .bt-panel .bt-info-box h2 {
-  margin: 0 0 10px;
+    margin: 0 0 10px;
 }
 
 .bt-bookmarks > .bt-bookmark-toolbar {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 .bt-folder-list {
-  margin: 5px 0;
+    margin: 5px 0;
 }
 .bt-folder-wrapper {
-  padding: 5px 0;
+    padding: 5px 0;
 }
 .bt-folder-wrapper > .bt-folder {
-  margin: 0;
-  transition: background-color 0.2s ease;
+    margin: 0;
+    transition: background-color 0.2s ease;
 }
 .bt-expansion-arrow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 22px;
-  width: 22px;
-  height: 22px;
-  transition: transform 0.2s ease;
-  transform: rotate(0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s ease;
+    transform: rotate(0deg);
 }
 .bt-expansion-arrow.is-expanded {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
 }
 .bt-expansion-arrow > svg {
-  width: 12px;
-  height: 12px;
+    width: 12px;
+    height: 12px;
 }
 .bt-sortable.is-dragging {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
-  user-select: none;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+    user-select: none;
 }
 .bt-folder-wrapper.is-dragging > .bt-folder {
-  background: #0f304d;
+    background: #0f304d;
 }
 .bt-trade-row.is-dragging {
-  background: #4c4c7d;
+    background: #4c4c7d;
 }
 .bt-sortable.is-dragging .bt-drag {
-  cursor: grabbing;
+    cursor: grabbing;
 }
 
 .bt-collapsible {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition:
-    grid-template-rows 0.24s ease,
-    opacity 0.18s ease;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition:
+        grid-template-rows 0.24s ease,
+        opacity 0.18s ease;
 }
 .bt-collapsible.is-open {
-  grid-template-rows: 1fr;
-  opacity: 1;
+    grid-template-rows: 1fr;
+    opacity: 1;
 }
 .bt-collapsible-inner {
-  min-height: 0;
-  overflow: hidden;
+    min-height: 0;
+    overflow: hidden;
 }
 .bt-collapsible.is-settled > .bt-collapsible-inner {
-  overflow: visible;
+    overflow: visible;
 }
 .bt-header-button .bt-icon {
-  width: 22px;
-  height: 22px;
+    width: 22px;
+    height: 22px;
 }
 .bt-dialog-close .bt-icon {
-  width: 22px;
-  height: 22px;
+    width: 22px;
+    height: 22px;
 }
 .bt-trade-row > a,
 .bt-history-link {
-  position: relative;
-  isolation: isolate;
+    position: relative;
+    isolation: isolate;
 }
 .bt-trade-row > a::before,
 .bt-history-link::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  opacity: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    to right,
-    rgba(138, 86, 9, 0.4),
-    rgba(138, 86, 9, 0)
-  );
-  transition: opacity 0.2s ease;
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(138, 86, 9, 0.4), rgba(138, 86, 9, 0));
+    transition: opacity 0.2s ease;
 }
 .bt-trade-row > a:hover::before,
 .bt-trade-row > a:focus::before,
 .bt-history-link:hover::before,
 .bt-history-link:focus::before {
-  opacity: 1;
+    opacity: 1;
 }
 @media (prefers-reduced-motion: reduce) {
-  .bt-expansion-arrow,
-  .bt-collapsible,
-  .bt-trade-row > a::before,
-  .bt-history-link::before {
-    transition: none;
-  }
+    .bt-expansion-arrow,
+    .bt-collapsible,
+    .bt-trade-row > a::before,
+    .bt-history-link::before {
+        transition: none;
+    }
 }

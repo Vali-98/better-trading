@@ -1,0 +1,7 @@
+node_modules/
+.wxt/
+.output/
+.dev-profiles/
+.env*
+public/
+package-lock.json
