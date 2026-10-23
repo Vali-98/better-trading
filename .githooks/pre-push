@@ -5,6 +5,18 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     case "$local_ref" in
         refs/tags/v*)
             tag=${local_ref#refs/tags/}
+            if printf '%s\n' "$tag" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+                if [ "$(git cat-file -t "$local_sha")" != 'tag' ]; then
+                    echo "Release tag $tag must be annotated with the message $tag." >&2
+                    exit 1
+                fi
+
+                tag_message=$(git for-each-ref --format='%(contents)' "$local_ref")
+                if [ "$tag_message" != "$tag" ]; then
+                    echo "Release tag $tag must have the message $tag." >&2
+                    exit 1
+                fi
+            fi
             npm run check:release -- "$tag"
             npm run check:changelog
             ;;
