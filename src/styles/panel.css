@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import './trends.css';
 
 .bt-release-notes {
     line-height: 1.5;
@@ -837,4 +838,33 @@
     padding: 6px;
     border: 1px solid #8a5609;
     text-align: left;
+}
+
+/* Keep the trends dock visible while bookmarks scroll independently above it. */
+.bt-panel-bookmarks {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.bt-panel-bookmarks > * {
+    flex-shrink: 0;
+}
+.bt-panel-bookmarks > .bt-bookmarks-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+.bt-bookmarks-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+.bt-bookmarks-body > .bt-unique-trends {
+    flex-shrink: 0;
+    margin: 8px 0 0;
+}
+.bt-bookmarks-body .bt-unique-trends ul {
+    max-height: min(300px, 30vh);
 }

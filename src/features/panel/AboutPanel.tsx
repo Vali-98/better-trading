@@ -12,6 +12,7 @@ const enhancerLabels = {
     'equivalent-pricings': 'Equivalent pricings (powered by poe.ninja)',
     'highlight-stat-filters': 'Highlight searched mods',
     'item-reference-links': 'Wiki and PoEDB item links',
+    'unique-price-sparklines': 'Item price trends (powered by poe.ninja)',
     // Hidden and disabled by default: less useful in modern PoE.
     // 'maximum-sockets': 'Warning for armors that cannot be 6-socketed',
     // 'regroup-similars': 'Regroup similar results',

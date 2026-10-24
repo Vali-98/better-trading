@@ -1,3 +1,4 @@
+import { ItemTrends } from '../features/trends/ItemTrends'
 import { useEffect, useState } from 'react'
 import { FlashMessages } from '../components/FlashMessages'
 import { BookmarksPanel } from '../features/bookmarks/BookmarksPanel'
@@ -23,7 +24,7 @@ export function ContentApp() {
         <>
             <aside
                 aria-label="Better Trading"
-                className={`bt-panel ${collapsed ? 'collapsed' : ''}`}>
+                className={`bt-panel ${collapsed ? 'collapsed' : ''} ${!collapsed && !about && page === 'bookmarks' ? 'bt-panel-bookmarks' : ''}`}>
                 <PanelHeader
                     collapsed={collapsed}
                     about={about}
@@ -53,7 +54,15 @@ export function ContentApp() {
 }
 
 function CurrentPanel({ page }: { page: ReturnType<typeof usePanelStore.getState>['page'] }) {
-    if (page === 'bookmarks') return <BookmarksPanel />
+    if (page === 'bookmarks')
+        return (
+            <div className="bt-bookmarks-body">
+                <div className="bt-bookmarks-scroll">
+                    <BookmarksPanel />
+                </div>
+                <ItemTrends />
+            </div>
+        )
     if (page === 'history') return <HistoryPanel />
     return <PinnedPanel />
 }

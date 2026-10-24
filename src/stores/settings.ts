@@ -4,6 +4,7 @@ export const enhancerIds = [
     'equivalent-pricings',
     'highlight-stat-filters',
     'item-reference-links',
+    'unique-price-sparklines',
 ] as const
 // Hidden and disabled by default: less useful in modern PoE.
 // 'maximum-sockets',
@@ -29,6 +30,7 @@ function initializeOptIn(flag: string, feature: string) {
     localStorage.setItem(flag, 'true')
 }
 
+initializeOptIn('bt-unique-sparklines-initialized', 'unique-price-sparklines')
 initializeOptIn('bt-search-tilde-initialized', 'default-search-filter-tilde')
 
 export type SearchEnhancementId = (typeof searchEnhancementIds)[number]
@@ -40,6 +42,7 @@ export const useSettingsStore = create<{
     disabled: localStorage.getItem('bt-disabled-settings')?.split(',').filter(Boolean) ?? [
         ...new Set([
             ...(localStorage.getItem('bt-disabled-enhancers') ?? '').split(',').filter(Boolean),
+            'unique-price-sparklines',
             'maximum-sockets',
             'regroup-similars',
             'default-search-filter-tilde',

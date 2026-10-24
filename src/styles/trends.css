@@ -1,0 +1,96 @@
+.bt-unique-trends {
+    margin: 12px 8px;
+    border: 1px solid #4b3c26;
+    border-radius: 3px;
+    background: rgba(16, 15, 12, 0.9);
+    font-size: 11px;
+}
+.bt-unique-trends summary {
+    cursor: pointer;
+    padding: 7px 9px;
+    color: #a38d6d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.bt-unique-trends summary::marker {
+    font-size: 9px;
+    color: #8a7049;
+}
+.bt-trends-source {
+    color: #a38d6d;
+    font-size: 10px;
+    margin-right: 8px;
+}
+.bt-trends-name {
+    color: #d7bb70;
+}
+.bt-unique-trends ul {
+    list-style: none;
+    margin: 0;
+    padding: 0 8px 3px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.bt-unique-trends li {
+    border-top: 1px solid rgba(138, 112, 73, 0.18);
+}
+.bt-unique-trends a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    padding: 3px 2px;
+    color: #b6aa93;
+    text-decoration: none;
+    border-radius: 2px;
+}
+.bt-unique-trends a:hover,
+.bt-unique-trends a:focus-visible {
+    background: rgba(215, 187, 112, 0.06);
+    color: #e1cf9f;
+}
+.bt-trend-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.bt-trend-chart {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
+    color: #a38d6d;
+}
+.bt-trend-chart[data-direction='up'] {
+    color: #89b69a;
+}
+.bt-trend-chart[data-direction='down'] {
+    color: #cd8b83;
+}
+.bt-trend-chart svg {
+    display: block;
+    width: 88px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.bt-trend-baseline {
+    fill: none;
+    stroke: #78664c;
+    stroke-opacity: 0.25;
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+}
+.bt-trend-change {
+    width: 46px;
+    text-align: right;
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+}
+
+.bt-trend-chart-large svg {
+    width: 176px;
+    height: 48px;
+}
