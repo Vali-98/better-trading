@@ -46,10 +46,7 @@ export function startPageController(client: QueryClient) {
                 )
             ).flat()
             const segment = matches[0]?.title || (context.type === 'search' ? recommendTitle() : '')
-            title =
-                (location.pathname.endsWith('/live') ? '⚡ ' : '') +
-                (segment ? segment + ' - ' : '') +
-                baseTitle
+            title = (segment ? segment + ' - ' : '') + baseTitle
             writeTitle()
         } finally {
             running = false

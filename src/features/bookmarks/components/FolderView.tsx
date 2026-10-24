@@ -1,3 +1,4 @@
+import { BookmarkLiveAction } from '../../liveSearch/BookmarkLiveAction'
 import { useState } from 'react'
 import { Collapsible } from '../../../components/Collapsible'
 import { Dialog } from '../../../components/Dialog'
@@ -59,6 +60,7 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
                 onDelete={() => setDeleteFolder(true)}
                 onExport={() => setExported(serialize(folder, items))}
                 canExport={Boolean(trades.data)}
+                liveAction={!folder.archivedAt && <BookmarkLiveAction trades={items} folder />}
             />
             <Collapsible open={expanded && !folder.archivedAt}>
                 <div className="bt-folder-body">

@@ -1,3 +1,4 @@
+import { useLiveSearchTargets } from '../liveSearch/useLiveSearchTargets'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { browser } from 'wxt/browser'
@@ -13,6 +14,7 @@ import { FolderView } from './components/FolderView'
 import { useExpandedFolders } from './hooks/useExpandedFolders'
 
 export function BookmarksPanel() {
+    useLiveSearchTargets(true)
     const client = useQueryClient()
     const folders = useQuery({ queryKey: bookmarkQueryKeys.folders(), queryFn: getFolders })
     const [archived, setArchived] = useState(false)

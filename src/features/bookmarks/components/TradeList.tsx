@@ -1,3 +1,4 @@
+import { BookmarkLiveAction } from '../../liveSearch/BookmarkLiveAction'
 import { DragHandle, SortableItem, SortableList } from '../../../components/Sortable'
 import { Icon } from '../../../components/Icon'
 import { tradeUrl, type Trade } from '../../../lib/bookmarks/storage'
@@ -44,7 +45,10 @@ export function TradeList({
                             <button onClick={() => onEdit(trade)}>Edit trade</button>
                             <button onClick={() => onCopy(trade)}>Copy trade URL</button>
                             {trade.location.type === 'search' && (
-                                <a href={tradeUrl(trade) + '/live'}>Open live search</a>
+                                <>
+                                    <a href={tradeUrl(trade) + '/live'}>Open live search</a>
+                                    <BookmarkLiveAction trades={[trade]} />
+                                </>
                             )}
                             <button onClick={() => onLocation(trade)}>Update trade location</button>
                             <button onClick={() => onMoveUp(trade)}>Move up</button>

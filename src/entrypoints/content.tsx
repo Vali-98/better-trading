@@ -1,3 +1,4 @@
+import { startLiveSearchEnhancer } from '../features/liveSearch/enhancer'
 import { reportIntegrationIssue } from '../integrations/diagnostics'
 import { decodeResultItems } from '../integrations/poe-trade/decode'
 import { useResultsStore } from '../stores/results'
@@ -15,6 +16,7 @@ export default defineContentScript({
     cssInjectionMode: 'ui',
     runAt: 'document_start',
     async main(ctx) {
+        ctx.onInvalidated(startLiveSearchEnhancer())
         const onItems = (event: MessageEvent) => {
             if (
                 event.source !== window ||

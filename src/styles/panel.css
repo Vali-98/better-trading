@@ -869,3 +869,26 @@
 .bt-bookmarks-body .bt-unique-trends ul {
     max-height: min(300px, 30vh);
 }
+
+.bt-panel section .bt-menu .bt-live-add-label:disabled {
+    background: transparent;
+    color: #aaa;
+    cursor: default;
+    opacity: 1;
+}
+.bt-panel section .bt-menu .bt-live-targets {
+    margin: 0 8px 6px 16px;
+    border-left: 1px solid #4c4c7d;
+}
+.bt-panel section .bt-menu .bt-live-targets button {
+    padding: 6px 10px;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px;
+}
+.bt-live-add-status {
+    margin: 6px 8px;
+    max-width: 260px;
+    font-size: 11px;
+}

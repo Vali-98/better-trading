@@ -1,7 +1,9 @@
+import { registerLiveSearchCoordinator } from '../lib/liveSearch/background'
 import { fetchCurrencyOverview } from '../integrations/poe-ninja/http'
 import { fetchItemPrices } from '../integrations/poe-ninja/client'
 import { browser } from 'wxt/browser'
 export default defineBackground(() => {
+    registerLiveSearchCoordinator()
     browser.runtime.onMessage.addListener((request: unknown) => {
         const input = request as {
             query?: string

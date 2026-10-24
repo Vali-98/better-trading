@@ -5,6 +5,7 @@ export const enhancerIds = [
     'highlight-stat-filters',
     'item-reference-links',
     'unique-price-sparklines',
+    'merged-live-searches',
 ] as const
 // Hidden and disabled by default: less useful in modern PoE.
 // 'maximum-sockets',
@@ -31,6 +32,7 @@ function initializeOptIn(flag: string, feature: string) {
 }
 
 initializeOptIn('bt-unique-sparklines-initialized', 'unique-price-sparklines')
+initializeOptIn('bt-live-merge-initialized', 'merged-live-searches')
 initializeOptIn('bt-search-tilde-initialized', 'default-search-filter-tilde')
 
 export type SearchEnhancementId = (typeof searchEnhancementIds)[number]
@@ -43,6 +45,7 @@ export const useSettingsStore = create<{
         ...new Set([
             ...(localStorage.getItem('bt-disabled-enhancers') ?? '').split(',').filter(Boolean),
             'unique-price-sparklines',
+            'merged-live-searches',
             'maximum-sockets',
             'regroup-similars',
             'default-search-filter-tilde',
@@ -63,3 +66,11 @@ export const useSettingsStore = create<{
             return { disabled }
         }),
 }))
+
+// Settings are shared by trade tabs; live subscriptions must stop in every tab
+// when their enhancer is disabled elsewhere.
+if (typeof window !== 'undefined')
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'bt-disabled-settings' && event.newValue !== null)
+            useSettingsStore.setState({ disabled: event.newValue.split(',').filter(Boolean) })
+    })
