@@ -1,4 +1,5 @@
 import {
+    faSearch,
     faTimes,
     faSort,
     faFileExport,
@@ -15,6 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 const icons = {
+    search: faSearch,
     github: faGithub,
     close: faTimes,
     sort: faSort,
