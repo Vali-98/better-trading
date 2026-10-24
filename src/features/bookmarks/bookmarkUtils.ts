@@ -20,24 +20,44 @@ const itemIconOrder = [
     'rune',
     'waystone',
     'wisdom',
+    'augment',
+    'gemcutter',
 ]
 
 const baseIcon = (icon: string) => icon.replace(/^poe2-/, '')
 
-export const iconNames = Object.keys(
-    import.meta.glob('../../../public/assets/images/bookmark-folder/*.png')
-).map((path) => path.split('/').pop()!.replace('.png', ''))
+const icons = Object.keys(
+    import.meta.glob(
+        '../../../public/assets/images/bookmark-folder/poe{1,2}/{characters,items}/*.png'
+    )
+).map((path) => {
+    const [game, group, file] = path.split('/').slice(-3)
+    const name = file.replace(/\.png$/, '')
+    return {
+        id: game === 'poe2' ? `poe2-${name}` : name,
+        version: game === 'poe2' ? '2' : '1',
+        items: group === 'items',
+        path: `${game}/${group}/${file}`,
+    }
+})
+const iconFiles = new Map(icons.map((icon) => [icon.id, icon.path]))
 
-export const iconUrl = (icon: string) =>
-    new URL(
-        `bookmark-folder/${encodeURIComponent(icon)}.png`,
+// IDs remain unchanged so saved bookmarks and exports keep their icons.
+export const iconNames = icons.map((icon) => icon.id)
+
+export const iconUrl = (icon: string) => {
+    const id = icon === 'raider' ? 'warden' : icon
+    const path = iconFiles.get(id)
+    return new URL(
+        path ? `bookmark-folder/${path}` : 'logo.png',
         browser.runtime.getURL('/assets/images/logo.png')
     ).href
+}
 
 export function folderIcons(version: string, items: boolean) {
-    return iconNames
-        .filter((icon) => icon.startsWith('poe2-') === (version === '2'))
-        .filter((icon) => itemIconOrder.includes(baseIcon(icon)) === items)
+    return icons
+        .filter((icon) => icon.version === (version === '2' ? '2' : '1') && icon.items === items)
+        .map((icon) => icon.id)
         .sort((a, b) =>
             items
                 ? itemIconOrder.indexOf(baseIcon(a)) - itemIconOrder.indexOf(baseIcon(b))
