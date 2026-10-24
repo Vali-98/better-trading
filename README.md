@@ -17,6 +17,8 @@ This fork maintains existing Better Trading features, with support for both Fire
 - Wiki and PoEDB links in searched items
 - Filtering shortcuts
 - Autofill tilde in stat and search inputs
+- Browser Back/Forward search navigation with a default-on, per-tab history cache
+  of 15 searches ([details and local testing](docs/search-history.md))
 
 ## Contributing
 
