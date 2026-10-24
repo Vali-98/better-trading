@@ -1,4 +1,4 @@
-import { isForbiddenJewel } from '../../integrations/poe-trade/uniqueItems/forbiddenJewels'
+import { isForbiddenJewel } from '../../integrations/poe-trade/uniqueItems/forbiddenPassiveSelection'
 import type { ItemPrice } from '../../models/priceTrend'
 
 export function searchTrendPrices(prices: ItemPrice[], name: string, passives: string[] = []) {

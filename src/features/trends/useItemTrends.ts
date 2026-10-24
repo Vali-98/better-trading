@@ -1,7 +1,5 @@
-import {
-    isForbiddenJewel,
-    searchForbiddenPassives,
-} from '../../integrations/poe-trade/uniqueItems/forbiddenJewels'
+import { isForbiddenJewel } from '../../integrations/poe-trade/uniqueItems/forbiddenPassiveSelection'
+import { searchForbiddenPassives } from '../../integrations/poe-trade/uniqueItems/forbiddenJewels'
 import { economyLeague } from '../../integrations/poe-ninja/league'
 import { itemSearchText } from '../../integrations/poe-trade/searchInputs'
 import { useEffect, useState } from 'react'

@@ -49,6 +49,9 @@
     overflow-y: auto;
 }
 .bt-unique-trends li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     border-top: 1px solid rgba(76, 76, 125, 0.35);
 }
 .bt-unique-trends a {
@@ -67,6 +70,9 @@
     color: #d1e4f5;
 }
 .bt-trend-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     flex: 1;
     min-width: 0;
     overflow: hidden;
@@ -126,11 +132,6 @@
     font-size: 10px;
 }
 
-.bt-trend-label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
 .bt-trend-label-text {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -141,11 +142,6 @@
     font-size: 8px;
 }
 
-.bt-unique-trends li {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
 .bt-unique-trends li > a {
     flex: 1;
     min-width: 0;

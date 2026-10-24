@@ -1,6 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
-vi.mock('wxt/browser', () => ({ browser: {} }))
-import { selectedForbiddenPassives } from './forbiddenJewels'
+import { describe, expect, it } from 'vitest'
+import { selectedForbiddenPassives } from './forbiddenPassiveSelection'
 import { searchTrendPrices } from '../../../features/trends/matchPrices'
 import { parseItemPrices } from '../../poe-ninja/items'
 import { trendVariantLabel } from '../../../features/trends/variantLabel'
