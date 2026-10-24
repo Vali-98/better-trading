@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './trends.css';
+@import './tags.css';
 
 .bt-release-notes {
     line-height: 1.5;
