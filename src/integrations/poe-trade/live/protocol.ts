@@ -1,3 +1,4 @@
+import { buildTradeUrl, buildLiveSocketUrl } from '../urls'
 import type { LiveSearch } from '../../../models/liveSearch'
 
 export function parseLiveSearch(value: string, label = ''): LiveSearch {
@@ -15,9 +16,15 @@ export function parseLiveSearch(value: string, label = ''): LiveSearch {
     )
     if (!match) throw new Error('Invalid trade search URL.')
     const [, game, league, query] = match
+    const destination = {
+        version: game === 'trade2' ? ('2' as const) : ('1' as const),
+        type: 'search',
+        league,
+        slug: query,
+    }
     return {
-        url: `${url.origin}/${game}/search/${league}/${query}`,
-        socket: `wss://${url.host}/api/${game}/live/${league}/${query}`,
+        url: buildTradeUrl(destination, { origin: url.origin }),
+        socket: buildLiveSocketUrl(destination, url.origin),
         scope: `${url.origin}/${game}/${league}`,
         key: query,
         label: label.trim().slice(0, 100) || 'Live search',

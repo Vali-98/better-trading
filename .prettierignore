@@ -7,4 +7,4 @@ public/
 package-lock.json
 
 # Preserve whitespace in captured live markup fixtures.
-src/integrations/poe-trade/fixtures/poe2-headhunter.html
+test/integrations/poe-trade/fixtures/poe2-headhunter.html

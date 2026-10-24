@@ -1,3 +1,4 @@
+import { liveSearchUrl } from '../../integrations/poe-trade/navigation'
 import { parseLiveSearch } from '../../integrations/poe-trade/live/protocol'
 import type { BookmarkLiveSearch, LiveTarget } from '../../models/liveSearch'
 
@@ -36,7 +37,7 @@ export function createBookmarkLiveManager(transport: BookmarkTransport) {
         if (target === undefined) {
             if (!options.create)
                 throw new Error('No compatible Live Search is active. Use Open live search first.')
-            target = await transport.open(first.url + '/live')
+            target = await transport.open(liveSearchUrl(first.url))
             await transport.ready(target, first.scope)
             added = 1
         }

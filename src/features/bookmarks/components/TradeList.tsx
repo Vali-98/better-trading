@@ -1,7 +1,8 @@
+import { bookmarkUrl } from '../../../integrations/poe-trade/navigation'
 import { BookmarkLiveAction } from '../../liveSearch/BookmarkLiveAction'
 import { DragHandle, SortableItem, SortableList } from '../../../components/Sortable'
 import { Icon } from '../../../components/Icon'
-import { tradeUrl, type Trade } from '../../../lib/bookmarks/storage'
+import { type Trade } from '../../../lib/bookmarks/storage'
 
 export function TradeList({
     trades,
@@ -26,7 +27,7 @@ export function TradeList({
         <SortableList ids={trades.map((trade) => trade.id)} onMove={onMove}>
             {trades.map((trade) => (
                 <SortableItem key={trade.id} id={trade.id} className="bt-trade-row">
-                    <a className="flex-1 underline" href={tradeUrl(trade)}>
+                    <a className="flex-1 underline" href={bookmarkUrl(trade)}>
                         {trade.completedAt && (
                             <span className="bt-completed" aria-label="Completed">
                                 ✓{' '}
@@ -46,7 +47,9 @@ export function TradeList({
                             <button onClick={() => onCopy(trade)}>Copy trade URL</button>
                             {trade.location.type === 'search' && (
                                 <>
-                                    <a href={tradeUrl(trade) + '/live'}>Open live search</a>
+                                    <a href={bookmarkUrl(trade, { live: true })}>
+                                        Open live search
+                                    </a>
                                     <BookmarkLiveAction trades={[trade]} />
                                 </>
                             )}

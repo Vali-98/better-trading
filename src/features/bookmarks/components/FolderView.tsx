@@ -1,10 +1,11 @@
+import { bookmarkUrl } from '../../../integrations/poe-trade/navigation'
 import { BookmarkLiveAction } from '../../liveSearch/BookmarkLiveAction'
 import { useState } from 'react'
 import { Collapsible } from '../../../components/Collapsible'
 import { Dialog } from '../../../components/Dialog'
 import { serialize } from '../../../lib/bookmarks/export'
 import { currentLocation } from '../../../integrations/poe-trade/location'
-import { tradeUrl, type Folder, type Trade } from '../../../lib/bookmarks/storage'
+import { type Folder, type Trade } from '../../../lib/bookmarks/storage'
 import { recommendTitle } from '../../../integrations/poe-trade/searchPanel'
 import { reordered } from '../bookmarkUtils'
 import { useFolderTrades } from '../hooks/useFolderTrades'
@@ -77,11 +78,16 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
                             })
                         }
                         onEdit={(trade) => setDraft({ ...trade })}
-                        onCopy={(trade) =>
+                        onCopy={(trade) => {
+                            const url = bookmarkUrl(trade)
+                            if (!url)
+                                return setError(
+                                    'Open a trade league before copying a bookmark URL.'
+                                )
                             void navigator.clipboard
-                                .writeText(tradeUrl(trade))
+                                .writeText(url)
                                 .catch(() => setError('Unable to access clipboard.'))
-                        }
+                        }}
                         onLocation={updateLocation}
                         onMoveUp={moveUp}
                         onDelete={setDeleting}

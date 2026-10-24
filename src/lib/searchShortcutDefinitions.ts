@@ -1,62 +1,53 @@
-export type ShortcutTitle = string | { readonly poe1: string; readonly poe2: string }
+import {
+    filterDefinitions,
+    forGame,
+    type FilterId,
+} from '../integrations/poe-trade/filterDefinitions'
+import type { PerGame } from '../models/search'
 
-export function resolveShortcutTitle(title: ShortcutTitle, version: '1' | '2') {
-    return typeof title === 'string' ? title : title[version === '2' ? 'poe2' : 'poe1']
-}
-
+export type ShortcutTitle = PerGame<string>
+export const resolveShortcutTitle = forGame<string>
 function referenceTitle(title: ShortcutTitle) {
     return typeof title === 'string' ? title : `${title.poe1} (PoE1) / ${title.poe2} (PoE2)`
 }
-
-export const shortcutDefinitions = [
-    { title: 'Item Level', keys: ['il', 'ilvl', 'itemlevel'], kind: 'number' },
-    {
-        title: { poe1: 'Quality', poe2: 'Item Quality' },
-        keys: ['q', 'qual', 'quality'],
-        kind: 'number',
-    },
-    { title: 'Identified', keys: ['id', 'identified'], kind: 'choice' },
-    { title: 'Vaal Gem', keys: ['vaalgem', 'vaal'], kind: 'choice' },
-    { title: 'Corrupted', keys: ['corrupted', 'c'], kind: 'choice' },
-    { title: 'Gem Level', keys: ['gl', 'gemlevel'], kind: 'choice' },
-    { title: 'Fractured Item', keys: ['frac', 'fractureditem'], kind: 'choice' },
-    { title: 'Synthesis Item', keys: ['synth', 'synthesisitem'], kind: 'choice' },
-    { title: 'Searing Exarch', keys: ['exarch', 'searingexarch'], kind: 'choice' },
-    { title: 'Eater of Worlds', keys: ['eater', 'eaterofworlds'], kind: 'choice' },
-    { title: 'Mirrored', keys: ['mirrored'], kind: 'choice' },
-    { title: 'Split', keys: ['split'], kind: 'choice' },
-    { title: 'Crafted', keys: ['craft', 'crafted'], kind: 'choice' },
-    { title: 'Veiled', keys: ['velt', 'veiled'], kind: 'choice' },
-    { title: 'Vestigial', keys: ['vest', 'vestigial'], kind: 'choice' },
-    { title: 'Memory Strands', keys: ['mem', 'memorystrands'], kind: 'number' },
-    { title: 'Foulborn', keys: ['foul', 'foulborn'], kind: 'choice' },
-    { title: 'Damage', keys: ['dmg', 'damage'], kind: 'number' },
-    { title: 'Attacks per Second', keys: ['aps', 'attackspersecond'], kind: 'number' },
-    {
-        title: 'Critical Chance',
-        keys: ['cc', 'criticalchance', 'criticalstrikechance'],
-        kind: 'number',
-    },
-    { title: 'Damage per Second', keys: ['dps', 'damagepersecond'], kind: 'number' },
-    { title: 'Physical DPS', keys: ['pdps', 'physicaldps'], kind: 'number' },
-    { title: 'Elemental DPS', keys: ['edps', 'elementaldps'], kind: 'number' },
-    { title: 'Armour', keys: ['ar', 'armour'], kind: 'number' },
-    { title: 'Evasion', keys: ['ev', 'evasion', 'evasionrating'], kind: 'number' },
-    { title: 'Energy Shield', keys: ['es', 'energyshield'], kind: 'number' },
-    { title: 'Ward', keys: ['ward'], kind: 'number' },
-    { title: 'Block', keys: ['block'], kind: 'number' },
-    {
-        title: 'Base Percentile',
-        keys: ['bp', 'basepercentile', 'basedefencepercentile'],
-        kind: 'number',
-    },
-    { title: 'Link Groups', keys: ['link', 'links', 'linkgroups'], kind: 'number' },
-    {
-        title: { poe1: 'Sockets', poe2: 'Augmentable Sockets' },
-        keys: ['soc', 'sockets'],
-        kind: 'sockets',
-    },
-] as const
+const shortcuts = [
+    { filter: 'itemLevel', keys: ['il', 'ilvl', 'itemlevel'] },
+    { filter: 'quality', keys: ['q', 'qual', 'quality'] },
+    { filter: 'identified', keys: ['id', 'identified'] },
+    { filter: 'vaalGem', keys: ['vaalgem', 'vaal'] },
+    { filter: 'corrupted', keys: ['corrupted', 'c'] },
+    { filter: 'gemLevel', keys: ['gl', 'gemlevel'] },
+    { filter: 'fractured', keys: ['frac', 'fractureditem'] },
+    { filter: 'synthesis', keys: ['synth', 'synthesisitem'] },
+    { filter: 'exarch', keys: ['exarch', 'searingexarch'] },
+    { filter: 'eater', keys: ['eater', 'eaterofworlds'] },
+    { filter: 'mirrored', keys: ['mirrored'] },
+    { filter: 'split', keys: ['split'] },
+    { filter: 'crafted', keys: ['craft', 'crafted'] },
+    { filter: 'veiled', keys: ['velt', 'veiled'] },
+    { filter: 'vestigial', keys: ['vest', 'vestigial'] },
+    { filter: 'memoryStrands', keys: ['mem', 'memorystrands'] },
+    { filter: 'foulborn', keys: ['foul', 'foulborn'] },
+    { filter: 'damage', keys: ['dmg', 'damage'] },
+    { filter: 'attacksPerSecond', keys: ['aps', 'attackspersecond'] },
+    { filter: 'criticalChance', keys: ['cc', 'criticalchance', 'criticalstrikechance'] },
+    { filter: 'dps', keys: ['dps', 'damagepersecond'] },
+    { filter: 'physicalDps', keys: ['pdps', 'physicaldps'] },
+    { filter: 'elementalDps', keys: ['edps', 'elementaldps'] },
+    { filter: 'armour', keys: ['ar', 'armour'] },
+    { filter: 'evasion', keys: ['ev', 'evasion', 'evasionrating'] },
+    { filter: 'energyShield', keys: ['es', 'energyshield'] },
+    { filter: 'ward', keys: ['ward'] },
+    { filter: 'block', keys: ['block'] },
+    { filter: 'basePercentile', keys: ['bp', 'basepercentile', 'basedefencepercentile'] },
+    { filter: 'links', keys: ['link', 'links', 'linkgroups'] },
+    { filter: 'sockets', keys: ['soc', 'sockets'] },
+] as const satisfies readonly { filter: FilterId; keys: readonly string[] }[]
+// Reference labels and value kinds come from the same catalog used by all callers.
+export const shortcutDefinitions = shortcuts.map((shortcut) => ({
+    ...filterDefinitions[shortcut.filter],
+    ...shortcut,
+}))
 
 export const shortcutChoices: Record<string, string> = {
     y: 'yes',
@@ -108,7 +99,7 @@ export function searchShortcutsMarkdown() {
         '- `soc;1b2g1r` sets one blue, two green and one red socket. Colors can appear in any order: `soc;2b1g` and `soc;1g2b` are equivalent.',
         '- Repeated colors are added together; omitted colors and previous total limits are cleared.',
         '- `soc;6` sets minimum six sockets and clears color requirements. Numeric ranges such as `soc;4-6` also work.',
-        '- Socket counts must be whole numbers from zero to six, with at most six sockets in total.',
+        '- PoE1 socket counts must be whole numbers from zero to six, with at most six sockets in total. Color requirements apply to PoE1; on PoE2, `soc` sets the Augmentable Sockets numeric range.',
         '',
         '## Yes / No / Any values',
         '',

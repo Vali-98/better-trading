@@ -1,6 +1,7 @@
+import { bookmarkUrl } from '../../integrations/poe-trade/navigation'
 import { useState } from 'react'
 import { browser } from 'wxt/browser'
-import { tradeUrl, type Trade } from '../../lib/bookmarks/storage'
+import { type Trade } from '../../lib/bookmarks/storage'
 import { parseLiveSearch } from '../../integrations/poe-trade/live/protocol'
 import { useLiveSearchTargets } from './useLiveSearchTargets'
 
@@ -18,7 +19,8 @@ export function BookmarkLiveAction({
         .filter((trade) => trade.location.type === 'search')
         .flatMap((trade) => {
             try {
-                return [parseLiveSearch(tradeUrl(trade), trade.title)]
+                const url = bookmarkUrl(trade)
+                return url ? [parseLiveSearch(url, trade.title)] : []
             } catch {
                 return []
             }

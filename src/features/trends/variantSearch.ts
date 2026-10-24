@@ -1,7 +1,8 @@
 import type { ItemPrice } from '../../models/priceTrend'
-import { searchLinkedVariant } from '../../integrations/poe-trade/linkFilters'
-import { searchGemVariant } from '../../integrations/poe-trade/gemFilters'
-import { searchMagebloodVariant } from '../../integrations/poe-trade/uniqueItems/magebloodFilters'
+import { applyFiltersAndSearch } from '../../integrations/poe-trade/search'
+import { supportsFilter } from '../../integrations/poe-trade/filterDefinitions'
+import { searchGemVariant } from './gemFilters'
+import { searchMagebloodVariant } from './uniqueItems/searchMageblood'
 import { magebloodVariant } from './uniqueItems/magebloodVariant'
 import { gemVariantValues } from './variantLabel'
 
@@ -20,9 +21,9 @@ export function variantSearch(price: ItemPrice, prices: ItemPrice[], version: '1
             run: () => searchGemVariant(gem, version),
         }
     const links = price.links
-    if (version === '1' && links)
+    if (links && supportsFilter('links', version))
         return {
             label: `Search for ${links} linked sockets`,
-            run: () => searchLinkedVariant(links),
+            run: () => applyFiltersAndSearch({ links: { min: links, max: links } }, { version }),
         }
 }

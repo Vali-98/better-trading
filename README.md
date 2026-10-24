@@ -27,7 +27,7 @@ This fork maintains existing Better Trading features, with support for both Fire
 Development launches use separate persistent browser profiles in `.dev-profiles/`,
 so logins and test data survive restarts.
 
-Run `npm run typecheck` and `npm test` to check changes.
+Run `npm run typecheck` and `npm test` to check changes. Tests mirror `src/` under `test/`, with fixtures beside the integration tests.
 
 ## Building and packaging
 
