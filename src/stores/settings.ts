@@ -10,22 +10,26 @@ export const enhancerIds = [
 // 'regroup-similars',
 export const searchEnhancementIds = [
     'coloured-meta-tags',
+    'search-filter-shortcuts',
+    'focus-item-search',
+    'focus-stat-search',
     'default-stat-filter-tilde',
     'default-search-filter-tilde',
 ] as const
 
-// Introduce the new opt-in without changing existing feature preferences.
-if (!localStorage.getItem('bt-search-tilde-initialized')) {
+// Preserve opt-in defaults when introducing settings to existing installations.
+function initializeOptIn(flag: string, feature: string) {
+    if (localStorage.getItem(flag)) return
     const saved = localStorage.getItem('bt-disabled-settings')
     if (saved !== null)
         localStorage.setItem(
             'bt-disabled-settings',
-            [...new Set([...saved.split(',').filter(Boolean), 'default-search-filter-tilde'])].join(
-                ','
-            )
+            [...new Set([...saved.split(',').filter(Boolean), feature])].join(',')
         )
-    localStorage.setItem('bt-search-tilde-initialized', 'true')
+    localStorage.setItem(flag, 'true')
 }
+
+initializeOptIn('bt-search-tilde-initialized', 'default-search-filter-tilde')
 
 export type SearchEnhancementId = (typeof searchEnhancementIds)[number]
 

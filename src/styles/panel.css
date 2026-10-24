@@ -798,3 +798,43 @@
         transition: none;
     }
 }
+
+.bt-setting-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+.bt-setting-row .bt-setting-checkbox {
+    margin: 0;
+}
+.bt-panel section .bt-shortcuts-info {
+    min-height: 0;
+    flex: 0 0 auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #d7bb70;
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.bt-panel section .bt-shortcuts-info:hover {
+    background: transparent;
+    text-decoration: underline;
+}
+.bt-shortcuts-reference {
+    max-height: 65vh;
+    overflow: auto;
+}
+.bt-shortcuts-reference table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.bt-shortcuts-reference th,
+.bt-shortcuts-reference td {
+    padding: 6px;
+    border: 1px solid #8a5609;
+    text-align: left;
+}

@@ -1,4 +1,7 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { Dialog } from '../../components/Dialog'
+import { ReleaseNotes } from '../../components/ReleaseNotes'
+import { searchShortcutsMarkdown } from '../../lib/searchShortcutDefinitions'
 import { Icon } from '../../components/Icon'
 import { ReleaseHistory } from '../Changelog'
 import { currentRelease } from '../../lib/releases'
@@ -16,14 +19,16 @@ const enhancerLabels = {
 
 const searchEnhancementLabels = {
     'coloured-meta-tags': 'Coloured meta tags',
+    'search-filter-shortcuts': 'Search filter shortcuts',
+    'focus-item-search': 'Shift + F to focus item search',
+    'focus-stat-search': 'Shift + S to focus stat filter search',
     'default-stat-filter-tilde': 'Autofill stat filter with tilde',
     'default-search-filter-tilde': 'Autofill search filter with tilde',
 }
 
 export function AboutPanel() {
+    const [showShortcuts, setShowShortcuts] = useState(false)
     const { disabled, toggle } = useSettingsStore()
-    const { disabled: disabledSearchEnhancements, toggle: toggleSearchEnhancement } =
-        useSettingsStore()
     return (
         <section className="bt-about">
             <ReleaseHistory />
@@ -42,15 +47,34 @@ export function AboutPanel() {
                     </label>
                 ))}
                 {searchEnhancementIds.map((id) => (
-                    <label className="bt-setting-checkbox" key={id}>
-                        <input
-                            type="checkbox"
-                            checked={!disabledSearchEnhancements.includes(id)}
-                            onChange={() => toggleSearchEnhancement(id)}
-                        />{' '}
-                        {searchEnhancementLabels[id]}
-                    </label>
+                    <div className="bt-setting-row" key={id}>
+                        <label className="bt-setting-checkbox">
+                            <input
+                                type="checkbox"
+                                checked={!disabled.includes(id)}
+                                onChange={() => toggle(id)}
+                            />{' '}
+                            {searchEnhancementLabels[id]}
+                        </label>
+                        {id === 'search-filter-shortcuts' && (
+                            <button
+                                type="button"
+                                className="bt-shortcuts-info"
+                                aria-label="Supported search shortcuts"
+                                title="Supported search shortcuts"
+                                onClick={() => setShowShortcuts(true)}>
+                                [see shortcuts]
+                            </button>
+                        )}
+                    </div>
                 ))}
+                {showShortcuts && (
+                    <Dialog title="Search shortcuts" close={() => setShowShortcuts(false)}>
+                        <div className="bt-shortcuts-reference">
+                            <ReleaseNotes markdown={searchShortcutsMarkdown()} />
+                        </div>
+                    </Dialog>
+                )}
             </InfoBox>
             <InfoBox title="GitHub">
                 <a

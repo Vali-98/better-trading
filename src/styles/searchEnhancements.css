@@ -50,3 +50,15 @@
 [data-bt-meta-tag-theme='sanctum']::before {
     background: #365d49;
 }
+
+.bt-search-shortcut-warning {
+    flex-basis: 100%;
+    padding: 6px 10px;
+    color: #f0c674;
+    background: #282015;
+    border: 1px solid #8a5609;
+    font-size: 13px;
+}
+.bt-search-shortcut-warning[hidden] {
+    display: none;
+}
