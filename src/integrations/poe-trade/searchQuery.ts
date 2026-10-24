@@ -1,11 +1,14 @@
-export async function searchItemName(slug: string | undefined, fallback: string) {
+import { decodeSearchQuery } from './encodedQuery'
+import { resolveItemType } from './itemTypes'
+
+export async function searchItemName(
+    slug: string | undefined,
+    fallback: string,
+    version: '1' | '2' = '1'
+) {
     if (!slug?.startsWith('H4sI')) return fallback.trim()
     try {
-        const encoded = slug.replace(/-/g, '+').replace(/_/g, '/')
-        const bytes = Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0))
-        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
-        const data = JSON.parse(await new Response(stream).text())
-        const query = data.query ?? data
+        const query = await decodeSearchQuery(slug)
         const text = (value: unknown) =>
             typeof value === 'string'
                 ? value
@@ -15,7 +18,19 @@ export async function searchItemName(slug: string | undefined, fallback: string)
                     typeof value.option === 'string'
                   ? value.option
                   : ''
-        return text(query.name) || text(query.type)
+        for (const value of [query.name, query.type]) {
+            const option = text(value)
+            if (!option) continue
+            if (
+                value &&
+                typeof value === 'object' &&
+                'discriminator' in value &&
+                typeof value.discriminator === 'string'
+            )
+                return resolveItemType(option, value.discriminator, version)
+            return option
+        }
+        return ''
     } catch {
         return fallback.trim()
     }

@@ -3,6 +3,10 @@ export interface ItemPrice {
     baseType: string
     detailsId: string
     category: string
+    price?: { amount: number; currency: string }
+    tradeStatIds?: string[]
+    explicitModifiers?: string[]
+    passiveName?: string
     variant?: string
     links?: number
     corrupted?: boolean

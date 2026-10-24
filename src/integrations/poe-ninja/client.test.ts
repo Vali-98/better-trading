@@ -35,7 +35,7 @@ it('deduplicates requests and caches an overview for one hour', async () => {
 })
 it('serves persisted data without network requests', async () => {
     vi.mocked(browser.storage.local.get).mockImplementationOnce((async () => ({
-        'poe-ninja-item-trends-v3--1--Cached': {
+        'poe-ninja-item-trends-v6--1--Cached': {
             value: [],
             expiresAt: new Date(Date.now() + 10000).toISOString(),
         },

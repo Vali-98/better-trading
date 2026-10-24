@@ -9,7 +9,7 @@ import type { ItemPrice } from '../../models/priceTrend'
 const pending = new Map<string, Promise<ItemPrice[]>>()
 
 export function fetchItemPrices(version: '1' | '2', league: string) {
-    const key = `poe-ninja-item-trends-v3--${version}--${league}`
+    const key = `poe-ninja-item-trends-v6--${version}--${league}`
     const existing = pending.get(key)
     if (existing) return existing
     const request = (async () => {

@@ -49,9 +49,7 @@ it('accepts gems and bases without baseType and preserves variant metadata', () 
 })
 
 it('labels non-unique variants', () => {
-    expect(trendVariantLabel({ ...price, gemLevel: 21, gemQuality: 20 })).toBe(
-        'Level 21 · 20% quality'
-    )
+    expect(trendVariantLabel({ ...price, gemLevel: 21, gemQuality: 20 })).toBe('Lv. 21 · Q 20')
     expect(trendVariantLabel({ ...price, itemLevel: 86, variant: 'Shaper' })).toBe(
         'Shaper · ilvl 86'
     )
@@ -88,4 +86,41 @@ it('decodes the live PoE2 item response and nullable trend samples', () => {
     expect(prices[0].name).toBe('The Gnashing Sash')
     expect(prices[0].sparkLine.data).toHaveLength(7)
     expect(prices[0].sparkLine.data).toContain(null)
+})
+
+it('uses divine prices for valuable PoE1 items and chaos for cheaper items', () => {
+    const line = {
+        name: 'Example',
+        detailsId: 'example',
+        sparkLine: { data: [0, 1] },
+        chaosValue: 400,
+        divineValue: 2,
+    }
+    expect(parseItemPrices({ lines: [line] }, 'unique-accessories')[0].price).toEqual({
+        amount: 2,
+        currency: 'Divine Orb',
+    })
+    expect(
+        parseItemPrices(
+            { lines: [{ ...line, chaosValue: 40, divineValue: 0.2 }] },
+            'unique-accessories'
+        )[0].price
+    ).toEqual({ amount: 40, currency: 'Chaos Orb' })
+})
+it('labels PoE2 prices using the API primary currency', () => {
+    const response = {
+        core: { primary: 'divine', items: [{ id: 'divine', name: 'Divine Orb' }] },
+        lines: [
+            {
+                name: 'Mageblood',
+                detailsId: 'mageblood',
+                primaryValue: 125,
+                sparkLine: { data: [0, 1] },
+            },
+        ],
+    }
+    expect(parseItemPrices(response, 'unique-accessories')[0].price).toEqual({
+        amount: 125,
+        currency: 'Divine Orb',
+    })
 })
