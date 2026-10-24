@@ -1,29 +1,45 @@
 .bt-unique-trends {
     margin: 12px 8px;
-    border: 1px solid #4b3c26;
+    border: 1px solid #4c4c7d;
     border-radius: 3px;
-    background: rgba(16, 15, 12, 0.9);
+    background: rgba(10, 15, 22, 0.95);
     font-size: 11px;
 }
 .bt-unique-trends summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
     cursor: pointer;
     padding: 7px 9px;
-    color: #a38d6d;
+    background: #0f304d;
+    color: #92abc2;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.bt-unique-trends summary::marker {
+.bt-unique-trends summary::-webkit-details-marker {
+    display: none;
+}
+.bt-unique-trends summary::before {
+    content: '▸';
+    color: #92abc2;
     font-size: 9px;
-    color: #8a7049;
+}
+.bt-unique-trends[open] summary::before {
+    content: '▾';
 }
 .bt-trends-source {
-    color: #a38d6d;
+    color: #92abc2;
     font-size: 10px;
-    margin-right: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
 }
 .bt-trends-name {
-    color: #d7bb70;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #d1e4f5;
 }
 .bt-unique-trends ul {
     list-style: none;
@@ -33,7 +49,7 @@
     overflow-y: auto;
 }
 .bt-unique-trends li {
-    border-top: 1px solid rgba(138, 112, 73, 0.18);
+    border-top: 1px solid rgba(76, 76, 125, 0.35);
 }
 .bt-unique-trends a {
     display: flex;
@@ -41,14 +57,14 @@
     gap: 8px;
     min-height: 32px;
     padding: 3px 2px;
-    color: #b6aa93;
+    color: #b8c9d8;
     text-decoration: none;
     border-radius: 2px;
 }
 .bt-unique-trends a:hover,
 .bt-unique-trends a:focus-visible {
-    background: rgba(215, 187, 112, 0.06);
-    color: #e1cf9f;
+    background: linear-gradient(to right, rgba(138, 86, 9, 0.4), rgba(138, 86, 9, 0));
+    color: #d1e4f5;
 }
 .bt-trend-label {
     flex: 1;
@@ -62,7 +78,7 @@
     flex: 0 0 auto;
     align-items: center;
     gap: 6px;
-    color: #a38d6d;
+    color: #92abc2;
 }
 .bt-trend-chart[data-direction='up'] {
     color: #89b69a;
@@ -93,4 +109,65 @@
 .bt-trend-chart-large svg {
     width: 176px;
     height: 48px;
+}
+
+.bt-trend-price {
+    flex: 0 0 auto;
+    max-width: 90px;
+    color: #d1e4f5;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.bt-trend-price > span {
+    color: #92abc2;
+    font-size: 10px;
+}
+
+.bt-trend-label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.bt-trend-label-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.bt-trend-label .bt-tag {
+    flex-shrink: 0;
+    margin-right: 0;
+    font-size: 8px;
+}
+
+.bt-unique-trends li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.bt-unique-trends li > a {
+    flex: 1;
+    min-width: 0;
+}
+.bt-panel .bt-unique-trends .bt-trend-apply {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 18px;
+    width: 18px;
+    height: 22px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #92abc2;
+    cursor: pointer;
+}
+.bt-trend-apply .bt-icon {
+    width: 11px;
+    height: 11px;
+}
+.bt-panel .bt-unique-trends .bt-trend-apply:hover {
+    color: #d1e4f5;
 }

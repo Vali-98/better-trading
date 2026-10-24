@@ -48,3 +48,13 @@ The JSON fixtures under each integration are reduced from the supplied trade res
 The trend UI intentionally hides when no matching data is available. Diagnostics distinguish unexpected integration formats from ordinary absence of data. Requests share cached data and rate limiting stops category fetches; failures do not alter the user's search.
 
 The PoE2 copy fallback and Headhunter regression fixture are informed by [upstream PR #191](https://github.com/exile-center/better-trading/pull/191). Native copy handlers remain in control when the site supplies item text.
+
+Gem discriminators are resolved from the live `/api/trade/data/items` metadata using an absolute page-origin URL. This keeps newly added variants resolvable without maintaining a bundled gem list. If metadata is unavailable, the name is left unresolved rather than guessed from the base gem.
+
+Mageblood trend searches cross-reference poe.ninja `tradeInfo.mod` identifiers and explicit modifier text against the live trade stat catalog. Missing metadata can be supplied by sibling variants of the same item. No leftmost/rightmost stat IDs or full stat labels are hardcoded. The selected 2–5 Flask variant supplies the exact range because the stats catalog identifies stats, not item-specific values, and poe.ninja's bounds can be incomplete. Unresolved metadata is reported rather than guessed.
+
+`tradeStats.ts` stores a reduced catalog (ID, text, type) in extension local storage, separately for PoE1 and PoE2. It refreshes after 24 hours, shares in-flight requests, and uses a stored stale catalog if refreshing fails. The catalog is downloaded and indexed programmatically, not checked into the repository. poe.ninja's internal `statIds` names are not assumed to be GGG trade IDs.
+
+Forbidden Flame/Flesh trends resolve enabled positive stat filters from the encoded search through `poe-trade/uniqueItems/forbiddenJewels.ts` and the cached stat catalog. Both composite stat IDs and option-valued IDs are supported. The matching modifier must reference the opposite jewel. Only explicitly selected passives are matched against poe.ninja's `metadata.passiveName` (or its passive-valued `name`) and jewel-valued `variant`; an unfiltered or unresolved search hides the panel instead of listing every passive.
+
+Unique-item trend descriptions belong in `features/trends/uniqueItems`; their trade-query adapters and tests belong in `integrations/poe-trade/uniqueItems`. Shared gem and link handling stays outside these directories.
