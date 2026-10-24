@@ -2,7 +2,7 @@
 
 # Search shortcuts
 
-Enable **Search filter shortcuts** in Settings. Type a shortcut in the item search and press Space to apply it. Both `;` and `:` separators work, for example `il;40` or `il:40`. Applied shortcuts disappear and expand their filter subsection; the rest of your search stays. This enhancer works independently of tilde autofill.
+Enable **Search filter shortcuts** in Settings. Type a shortcut in the item search and press Space or Enter to apply it. Enter consumes applied shortcuts without submitting the search; press Enter again to search. Both `;` and `:` separators work, for example `il;40` or `il:40`. Applied shortcuts disappear and expand their filter subsection; the rest of your search stays. This enhancer works independently of tilde autofill.
 
 <table><thead><tr><th>Filter</th><th>Supported keys</th><th>Examples</th></tr></thead><tbody>
 <tr><td>Item Level</td><td><code>il</code>, <code>ilvl</code>, <code>itemlevel</code></td><td><code>il;40</code>, <code>il;30-90</code>, <code>il;-90</code></td></tr>
@@ -41,7 +41,7 @@ Enable **Search filter shortcuts** in Settings. Type a shortcut in the item sear
 
 ## Clear all filters
 
-Type `;clear` or `:clear` followed by Space to activate the site’s Clear button and reset the search and all filters.
+Type `;clear` or `:clear` followed by Space or Enter to activate the site’s Clear button and reset the search and all filters.
 
 ## Numeric values
 

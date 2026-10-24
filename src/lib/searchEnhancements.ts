@@ -98,6 +98,52 @@ export function startSearchEnhancements() {
         event.stopImmediatePropagation()
         input.dispatchEvent(new Event('input', { bubbles: true }))
     }
+    let suppressEnter = false
+    const suppressEnterEvent = (event: KeyboardEvent) => {
+        if (event.key !== 'Enter' || !suppressEnter) return
+        event.preventDefault()
+        event.stopImmediatePropagation()
+    }
+    const onKeyUp = (event: KeyboardEvent) => {
+        suppressEnterEvent(event)
+        if (event.key === 'Enter') suppressEnter = false
+    }
+    const onBlur = () => {
+        suppressEnter = false
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+        if (event.key !== 'Enter') return
+        if (suppressEnter && event.repeat) {
+            suppressEnterEvent(event)
+            return
+        }
+        suppressEnter = false
+        if (
+            event.isComposing ||
+            event.defaultPrevented ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.altKey
+        )
+            return
+        const input = event.target
+        if (!(input instanceof HTMLInputElement)) return
+        rememberInput(input)
+        if (
+            searchInputs.kind(input) !== 'item' ||
+            useSettingsStore.getState().disabled.includes('search-filter-shortcuts')
+        )
+            return
+        if (!consumeSearchShortcuts(input, (messages) => showWarnings(input, messages), true))
+            return
+        suppressEnter = true
+        suppressEnterEvent(event)
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+    }
+    window.addEventListener('keydown', onKeyDown, true)
+    window.addEventListener('keypress', suppressEnterEvent, true)
+    window.addEventListener('keyup', onKeyUp, true)
+    window.addEventListener('blur', onBlur)
     document.addEventListener('input', onInput, true)
     document.addEventListener('compositionend', onInput, true)
     const unsubscribe = useSettingsStore.subscribe(schedule)
@@ -106,6 +152,10 @@ export function startSearchEnhancements() {
         clearTimeout(scheduled)
         observer.disconnect()
         stopFocusShortcuts()
+        window.removeEventListener('keydown', onKeyDown, true)
+        window.removeEventListener('keypress', suppressEnterEvent, true)
+        window.removeEventListener('keyup', onKeyUp, true)
+        window.removeEventListener('blur', onBlur)
         document.removeEventListener('focus', onFocus, true)
         document.removeEventListener('input', onInput, true)
         document.removeEventListener('compositionend', onInput, true)

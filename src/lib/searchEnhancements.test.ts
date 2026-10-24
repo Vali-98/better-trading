@@ -221,3 +221,81 @@ it('expands Show Filters before Shift+S focuses stat search', async () => {
     expect(clicks).toBe(1)
     expect(document.activeElement).toBe(input)
 })
+
+it.each(['il:40', 'il;40', 'il40'])(
+    'consumes %s on Enter without letting the site search',
+    (shortcut) => {
+        document.body.innerHTML =
+            '<input class="multiselect__input" placeholder="Search Items..."><div class="filter filter-property"><div class="filter-title">Item Level</div><input class="minmax" type="number" placeholder="min"><input class="minmax" type="number" placeholder="max"></div>'
+        const input = document.querySelector<HTMLInputElement>('input.multiselect__input')!
+        input.value = `~boots ${shortcut}`
+        let siteKeys = 0
+        let received = ''
+        input.addEventListener('input', () => {
+            received = input.value
+        })
+        for (const type of ['keydown', 'keypress', 'keyup'])
+            input.addEventListener(type, () => {
+                siteKeys++
+            })
+        for (const type of ['keydown', 'keypress', 'keyup']) {
+            const event = new KeyboardEvent(type, { key: 'Enter', bubbles: true, cancelable: true })
+            input.dispatchEvent(event)
+            expect(event.defaultPrevented).toBe(true)
+        }
+        expect(siteKeys).toBe(0)
+        expect(received).toBe('~boots ')
+        expect(document.querySelector<HTMLInputElement>('input.minmax')!.value).toBe('40')
+        // The next Enter submits normally once no shortcut remains.
+        const next = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+        input.dispatchEvent(next)
+        expect(next.defaultPrevented).toBe(false)
+        expect(siteKeys).toBe(1)
+    }
+)
+
+it.each([
+    { value: 'boots', placeholder: 'Search Items...', disabled: [], composing: false },
+    { value: 'unknown:40', placeholder: 'Search Items...', disabled: [], composing: false },
+    { value: 'il:40', placeholder: '+ Add Stat Filter', disabled: [], composing: false },
+    {
+        value: 'il:40',
+        placeholder: 'Search Items...',
+        disabled: ['search-filter-shortcuts'],
+        composing: false,
+    },
+    { value: 'il:40', placeholder: 'Search Items...', disabled: [], composing: true },
+])(
+    'preserves normal Enter handling for $value ($placeholder, disabled=$disabled, composing=$composing)',
+    ({ value, placeholder, disabled, composing }) => {
+        useSettingsStore.setState({ disabled })
+        document.body.innerHTML = `<input class="multiselect__input" placeholder="${placeholder}">`
+        const input = document.querySelector('input')!
+        input.value = value
+        const event = new KeyboardEvent('keydown', {
+            key: 'Enter',
+            bubbles: true,
+            cancelable: true,
+            isComposing: composing,
+        })
+        input.dispatchEvent(event)
+        expect(event.defaultPrevented).toBe(false)
+        expect(input.value).toBe(value)
+    }
+)
+
+it('consumes a trailing clear command on Enter', () => {
+    document.body.innerHTML =
+        '<input class="multiselect__input" placeholder="Search Items..."><button class="clear-btn"></button>'
+    const input = document.querySelector('input')!
+    let cleared = false
+    document.querySelector('button')!.addEventListener('click', () => {
+        cleared = true
+    })
+    input.value = ':clear'
+    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true })
+    input.dispatchEvent(event)
+    expect(event.defaultPrevented).toBe(true)
+    expect(cleared).toBe(true)
+    expect(input.value).toBe('')
+})

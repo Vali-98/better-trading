@@ -15,12 +15,16 @@ function applyShortcut(key: string, value: string, warn: (message: string) => vo
 // Consume only completed tokens, leaving unknown or invalid shortcuts available to edit.
 export function consumeSearchShortcuts(
     input: HTMLInputElement,
-    onWarnings?: (messages: string[]) => void
+    onWarnings?: (messages: string[]) => void,
+    complete = false
 ) {
     const warnings = new Set<string>()
     const original = input.value
     // Reset commands take precedence over filter-setting tokens in the same input.
-    if (/(?:^|\s)~?[:;](?:clear|rmrf)(?=\s)/i.test(original)) {
+    const reset = complete
+        ? /(?:^|\s)~?[:;](?:clear|rmrf)(?=\s|$)/i
+        : /(?:^|\s)~?[:;](?:clear|rmrf)(?=\s)/i
+    if (reset.test(original)) {
         if (!clearSearch()) {
             onWarnings?.(['The Clear button is unavailable. The shortcut was kept in your search.'])
             return false
@@ -34,7 +38,7 @@ export function consumeSearchShortcuts(
     let removedBeforeStart = 0
     let removedBeforeEnd = 0
     const value = original.replace(
-        /(?<!\S)(~?)([a-z][a-z0-9]*)[:;]([^\s]+)(\s+)|(?<!\S)(~?)(il|ilvl)(\d+(?:-\d*)?)(\s+)/gi,
+        /(?<!\S)(~?)([a-z][a-z0-9]*)[:;]([^\s]+)(\s+|$)|(?<!\S)(~?)(il|ilvl)(\d+(?:-\d*)?)(\s+|$)/gi,
         (
             match,
             prefix,
@@ -47,6 +51,7 @@ export function consumeSearchShortcuts(
             _shortSpace,
             offset: number
         ) => {
+            if (!complete && !(_space ?? _shortSpace)) return match
             if (
                 !applyShortcut(
                     (key ?? shortKey).toLowerCase(),
