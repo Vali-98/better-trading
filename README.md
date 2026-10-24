@@ -4,17 +4,19 @@
 
 A browser extension that enhances the pathofexile.com trade site experience for Path of Exile and Path of Exile 2.
 
-This fork maintains existing Better Trading features, with support for both Firefox and Chromium builds.
+This fork maintains existing Better Trading features, with support for both Firefox and Chromium builds, rebuilt from the ground up.
 
 ## Features
 
 - Bookmarks manager with folders, icons, drag ordering, and archiving
 - Folder sharing through import/export, plus file backups and restore
 - Equivalent pricing calculator powered by [poe.ninja](https://poe.ninja/)
-- Searched mods highlighting and maximum-socket warnings
-- Similar result grouping
 - Pinned items with quick navigation to the original result
 - Search history and descriptive browser-tab titles
+- Merging Live Queries to a single tab
+- Wiki and PoEDB links in searched items
+- Filtering shortcuts
+- Autofill tilde in stat and search inputs
 
 ## Contributing
 
@@ -23,8 +25,7 @@ This fork maintains existing Better Trading features, with support for both Fire
 3. Run `npm run dev` for Chrome or `npm run dev:firefox` for Firefox.
 
 Development launches use separate persistent browser profiles in `.dev-profiles/`,
-so logins and test data survive restarts. Close the development browser before
-launching it again to avoid a profile lock. These profiles are excluded from git.
+so logins and test data survive restarts.
 
 Run `npm run typecheck` and `npm test` to check changes.
 

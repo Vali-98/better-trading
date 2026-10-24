@@ -10,6 +10,8 @@ it('renders the generated shortcut reference as a table with every defined key',
     for (const { keys } of shortcutDefinitions)
         for (const key of keys) expect(html).toContain(`<code>${key}</code>`)
     expect(html).toContain('<code>id;y</code>')
+    expect(html).toContain('Quality (PoE1) / Item Quality (PoE2)')
+    expect(html).not.toContain('[object Object]')
 })
 
 it('keeps the standalone document synchronized with the reference', () => {

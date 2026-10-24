@@ -1,6 +1,20 @@
+export type ShortcutTitle = string | { readonly poe1: string; readonly poe2: string }
+
+export function resolveShortcutTitle(title: ShortcutTitle, version: '1' | '2') {
+    return typeof title === 'string' ? title : title[version === '2' ? 'poe2' : 'poe1']
+}
+
+function referenceTitle(title: ShortcutTitle) {
+    return typeof title === 'string' ? title : `${title.poe1} (PoE1) / ${title.poe2} (PoE2)`
+}
+
 export const shortcutDefinitions = [
     { title: 'Item Level', keys: ['il', 'ilvl', 'itemlevel'], kind: 'number' },
-    { title: 'Quality', keys: ['q', 'qual', 'quality'], kind: 'number' },
+    {
+        title: { poe1: 'Quality', poe2: 'Item Quality' },
+        keys: ['q', 'qual', 'quality'],
+        kind: 'number',
+    },
     { title: 'Identified', keys: ['id', 'identified'], kind: 'choice' },
     { title: 'Vaal Gem', keys: ['vaalgem', 'vaal'], kind: 'choice' },
     { title: 'Corrupted', keys: ['corrupted', 'c'], kind: 'choice' },
@@ -37,7 +51,11 @@ export const shortcutDefinitions = [
         kind: 'number',
     },
     { title: 'Link Groups', keys: ['link', 'links', 'linkgroups'], kind: 'number' },
-    { title: 'Sockets', keys: ['soc', 'sockets'], kind: 'sockets' },
+    {
+        title: { poe1: 'Sockets', poe2: 'Augmentable Sockets' },
+        keys: ['soc', 'sockets'],
+        kind: 'sockets',
+    },
 ] as const
 
 export const shortcutChoices: Record<string, string> = {
@@ -60,7 +78,7 @@ export function searchShortcutsMarkdown() {
         '<table><thead><tr><th>Filter</th><th>Supported keys</th><th>Examples</th></tr></thead><tbody>',
         ...shortcutDefinitions.map(
             ({ title, keys, kind }) =>
-                `<tr><td>${title}</td><td>${keys.map((key) => `<code>${key}</code>`).join(', ')}</td><td>${
+                `<tr><td>${referenceTitle(title)}</td><td>${keys.map((key) => `<code>${key}</code>`).join(', ')}</td><td>${
                     kind === 'sockets'
                         ? '<code>soc;6w</code>, <code>soc;1b2g1r</code>, <code>soc;6</code>'
                         : kind === 'number'

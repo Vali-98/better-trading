@@ -1,6 +1,18 @@
 import { expandFilterGroup } from './expandFilters'
 const normalizeTitle = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '')
 
+function findPropertyFilter(titles: string[]) {
+    const filters = Array.from(document.querySelectorAll<HTMLElement>('.filter.filter-property'))
+    // Match requested targets in priority order, independent of DOM order.
+    for (const title of titles) {
+        const filter = filters.find(
+            (filter) =>
+                normalizeTitle(filter.querySelector('.filter-title')?.textContent ?? '') === title
+        )
+        if (filter) return filter
+    }
+}
+
 function setNumber(input: HTMLInputElement, value: string) {
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(input, value)
     input.dispatchEvent(new Event('input', { bubbles: true }))
@@ -13,16 +25,8 @@ export function applyFilterValue(
     value: string,
     warn: (message: string) => void
 ) {
-    if (titles.includes('quality') && !titles.includes('itemquality'))
-        titles = [...titles, 'itemquality']
     const title = titles[0]
-    const filters = document.querySelectorAll<HTMLElement>('.filter.filter-property')
-    const filter = Array.from(filters).find((filter) =>
-        titles.some(
-            (alias) =>
-                normalizeTitle(filter.querySelector('.filter-title')?.textContent ?? '') === alias
-        )
-    )
+    const filter = findPropertyFilter(titles)
     if (!filter) {
         warn(`${label} is not available on this trade page. The shortcut was kept in your search.`)
         return false
@@ -107,11 +111,7 @@ export function clearSearch() {
 }
 
 export function clearNumericFilter(titles: string[]) {
-    const filter = Array.from(
-        document.querySelectorAll<HTMLElement>('.filter.filter-property')
-    ).find((filter) =>
-        titles.includes(normalizeTitle(filter.querySelector('.filter-title')?.textContent ?? ''))
-    )
+    const filter = findPropertyFilter(titles)
     if (!filter || filter.classList.contains('disabled')) return false
     const min = filter.querySelector<HTMLInputElement>('input.minmax[placeholder="min"]')
     const max = filter.querySelector<HTMLInputElement>('input.minmax[placeholder="max"]')

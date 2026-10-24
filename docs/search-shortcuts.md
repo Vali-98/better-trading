@@ -6,7 +6,7 @@ Enable **Search filter shortcuts** in Settings. Type a shortcut in the item sear
 
 <table><thead><tr><th>Filter</th><th>Supported keys</th><th>Examples</th></tr></thead><tbody>
 <tr><td>Item Level</td><td><code>il</code>, <code>ilvl</code>, <code>itemlevel</code></td><td><code>il;40</code>, <code>il;30-90</code>, <code>il;-90</code></td></tr>
-<tr><td>Quality</td><td><code>q</code>, <code>qual</code>, <code>quality</code></td><td><code>q;40</code>, <code>q;30-90</code>, <code>q;-90</code></td></tr>
+<tr><td>Quality (PoE1) / Item Quality (PoE2)</td><td><code>q</code>, <code>qual</code>, <code>quality</code></td><td><code>q;40</code>, <code>q;30-90</code>, <code>q;-90</code></td></tr>
 <tr><td>Identified</td><td><code>id</code>, <code>identified</code></td><td><code>id;y</code>, <code>id;n</code>, <code>id;a</code></td></tr>
 <tr><td>Vaal Gem</td><td><code>vaalgem</code>, <code>vaal</code></td><td><code>vaalgem;y</code>, <code>vaalgem;n</code>, <code>vaalgem;a</code></td></tr>
 <tr><td>Corrupted</td><td><code>corrupted</code>, <code>c</code></td><td><code>corrupted;y</code>, <code>corrupted;n</code>, <code>corrupted;a</code></td></tr>
@@ -35,7 +35,7 @@ Enable **Search filter shortcuts** in Settings. Type a shortcut in the item sear
 <tr><td>Block</td><td><code>block</code></td><td><code>block;40</code>, <code>block;30-90</code>, <code>block;-90</code></td></tr>
 <tr><td>Base Percentile</td><td><code>bp</code>, <code>basepercentile</code>, <code>basedefencepercentile</code></td><td><code>bp;40</code>, <code>bp;30-90</code>, <code>bp;-90</code></td></tr>
 <tr><td>Link Groups</td><td><code>link</code>, <code>links</code>, <code>linkgroups</code></td><td><code>link;40</code>, <code>link;30-90</code>, <code>link;-90</code></td></tr>
-<tr><td>Sockets</td><td><code>soc</code>, <code>sockets</code></td><td><code>soc;6w</code>, <code>soc;1b2g1r</code>, <code>soc;6</code></td></tr>
+<tr><td>Sockets (PoE1) / Augmentable Sockets (PoE2)</td><td><code>soc</code>, <code>sockets</code></td><td><code>soc;6w</code>, <code>soc;1b2g1r</code>, <code>soc;6</code></td></tr>
 
 </tbody></table>
 

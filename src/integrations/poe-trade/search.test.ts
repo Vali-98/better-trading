@@ -30,8 +30,8 @@ it('selects an option from the supplied nested option markup using click', () =>
     expect(selected).toBe('Yes')
 })
 
-it('maps the Quality shortcut to PoE2 Item Quality', () => {
+it('matches the explicitly requested Item Quality target', () => {
     document.querySelector('.filter-title')!.textContent = 'Item Quality'
-    expect(applyFilterValue(['quality', 'q', 'qual'], 'Quality', '20', () => {})).toBe(true)
+    expect(applyFilterValue(['itemquality'], 'Item Quality', '20', () => {})).toBe(true)
     expect(document.querySelector<HTMLInputElement>('input.minmax')!.value).toBe('20')
 })

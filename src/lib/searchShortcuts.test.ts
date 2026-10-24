@@ -10,6 +10,7 @@ function setup(value: string) {
 }
 afterEach(() => {
     document.body.innerHTML = ''
+    window.history.replaceState({}, '', '/')
 })
 
 it.each([
@@ -291,4 +292,62 @@ it.each(['il:40 ', 'il;40 ', 'il:30 il;40 '])('supports either separator: %s', (
     expect(consumeSearchShortcuts(input)).toBe(true)
     expect(input.value).toBe('')
     expect(document.querySelector<HTMLInputElement>('[placeholder="min"]')!.value).toBe('40')
+})
+
+it.each(['q:20 ', 'qual;20 ', 'quality:20 '])(
+    'applies %s to Item Quality on PoE2 instead of an earlier Quality field',
+    (shortcut) => {
+        window.history.replaceState({}, '', '/trade2/search/poe2/Standard/test')
+        const input = setup(shortcut)
+        document.querySelector('.filter-title')!.textContent = 'Quality'
+        document.body.insertAdjacentHTML(
+            'beforeend',
+            '<div class="filter filter-property"><div class="filter-title">Item Quality</div><input class="minmax" placeholder="min"><input class="minmax" placeholder="max" value="30"></div>'
+        )
+        const filters = document.querySelectorAll('.filter-property')
+        let received = ''
+        filters[1].querySelector('input')!.addEventListener('input', (event) => {
+            received = (event.target as HTMLInputElement).value
+        })
+        expect(consumeSearchShortcuts(input)).toBe(true)
+        expect(input.value).toBe('')
+        expect(filters[0].querySelector<HTMLInputElement>('input')!.value).toBe('')
+        expect(filters[1].querySelector<HTMLInputElement>('input')!.value).toBe('20')
+        expect(filters[1].querySelector<HTMLInputElement>('[placeholder="max"]')!.value).toBe('')
+        expect(received).toBe('20')
+    }
+)
+
+it('keeps the Quality target on PoE1 even when Item Quality appears first', () => {
+    window.history.replaceState({}, '', '/trade/search/Standard/test')
+    const input = setup('q:20 ')
+    document.querySelector('.filter-title')!.textContent = 'Item Quality'
+    document.body.insertAdjacentHTML(
+        'beforeend',
+        '<div class="filter filter-property"><div class="filter-title">Quality</div><input class="minmax" placeholder="min"><input class="minmax" placeholder="max"></div>'
+    )
+    expect(consumeSearchShortcuts(input)).toBe(true)
+    const fields = document.querySelectorAll<HTMLInputElement>('input.minmax[placeholder="min"]')
+    expect(Array.from(fields, (field) => field.value)).toEqual(['', '20'])
+})
+
+it('keeps a game-specific shortcut when its target is absent instead of filling another game’s field', () => {
+    window.history.replaceState({}, '', '/trade2/search/poe2/Standard/test')
+    const input = setup('q:20 ')
+    document.querySelector('.filter-title')!.textContent = 'Quality'
+    const warnings: string[] = []
+    expect(consumeSearchShortcuts(input, (messages) => warnings.push(...messages))).toBe(false)
+    expect(input.value).toBe('q:20 ')
+    expect(document.querySelector<HTMLInputElement>('input.minmax')!.value).toBe('')
+    expect(warnings[0]).toContain('Item Quality is not available')
+})
+
+it('sets the PoE2 Augmentable Sockets range through the sockets shortcut', () => {
+    window.history.replaceState({}, '', '/trade2/search/poe2/Standard/test')
+    const input = setup('soc:2-3 ')
+    document.querySelector('.filter-title')!.textContent = 'Augmentable Sockets'
+    expect(consumeSearchShortcuts(input)).toBe(true)
+    expect(input.value).toBe('')
+    expect(document.querySelector<HTMLInputElement>('[placeholder="min"]')!.value).toBe('2')
+    expect(document.querySelector<HTMLInputElement>('[placeholder="max"]')!.value).toBe('3')
 })

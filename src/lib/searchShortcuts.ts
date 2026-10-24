@@ -1,15 +1,27 @@
+import { currentLocation } from '../integrations/poe-trade/location'
 import { applyFilterValue, clearSearch } from '../integrations/poe-trade/search'
 import {
     normalizeFilterTitle,
+    resolveShortcutTitle,
     shortcutChoices,
     shortcutDefinitions,
 } from './searchShortcutDefinitions'
 
 function applyShortcut(key: string, value: string, warn: (message: string) => void) {
     const definition = shortcutDefinitions.find(({ keys }) => keys.some((alias) => alias === key))
-    const titles = definition ? [normalizeFilterTitle(definition.title), ...definition.keys] : [key]
+    const label = definition
+        ? resolveShortcutTitle(definition.title, currentLocation().version)
+        : key
+    // Game-specific targets are exact: shortcut aliases must not match a field
+    // belonging to the other game if the selected target is unavailable.
+    const titles = definition
+        ? [
+              normalizeFilterTitle(label),
+              ...(typeof definition.title === 'string' ? definition.keys : []),
+          ]
+        : [key]
     const argument = Object.hasOwn(shortcutChoices, value) ? shortcutChoices[value] : value
-    return applyFilterValue(titles, definition?.title ?? key, argument, warn)
+    return applyFilterValue(titles, label, argument, warn)
 }
 
 // Consume only completed tokens, leaving unknown or invalid shortcuts available to edit.
