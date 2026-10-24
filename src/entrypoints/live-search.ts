@@ -1,4 +1,4 @@
-import { installLiveBridge } from '../integrations/poe-trade/live/bridge'
+import { installLiveSession } from '../lib/liveSearch/session'
 export default defineUnlistedScript(() => {
-    installLiveBridge()
+    installLiveSession()
 })

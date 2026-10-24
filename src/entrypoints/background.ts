@@ -1,6 +1,6 @@
 import { registerLiveSearchCoordinator } from '../lib/liveSearch/background'
 import { fetchCurrencyOverview } from '../integrations/poe-ninja/http'
-import { fetchItemPrices } from '../integrations/poe-ninja/client'
+import { fetchItemPrices } from '../lib/prices/itemPrices'
 import { browser } from 'wxt/browser'
 export default defineBackground(() => {
     registerLiveSearchCoordinator()
@@ -16,7 +16,10 @@ export default defineBackground(() => {
             typeof input.league === 'string' &&
             input.league.length < 100
         )
-            return fetchItemPrices(input.version, input.league).catch(() => [])
+            return fetchItemPrices(input.version, input.league).catch(() => ({
+                prices: [],
+                complete: false,
+            }))
         if (input?.query !== 'currency-ratios') return
         if ((input.version !== '1' && input.version !== '2') || typeof input.league !== 'string')
             return Promise.resolve(null)

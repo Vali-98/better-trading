@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from 'vitest'
-import { installLiveBridge } from './bridge'
+import { installLiveSession as installLiveBridge } from './session'
 
 let stop: (() => void) | undefined
 afterEach(() => {
@@ -211,10 +211,18 @@ it('does not re-add the primary query or an existing attached query, including a
         label: 'Second',
     })
     expect(Socket.instances).toHaveLength(2)
+    expect(
+        post.mock.calls.some(
+            ([value]) =>
+                value.type === 'bt-live-reply' &&
+                value.payload.id === 'paused-again' &&
+                value.payload.ok === false
+        )
+    ).toBe(true)
     const state = post.mock.calls.filter(([value]) => value.type === 'bt-live-state').at(-1)![0]
         .payload
     expect(state.subscriptions[0]).toMatchObject({ status: 'paused', enabled: false })
-    for (const id of ['primary-again', 'active-again', 'paused-again']) {
+    for (const id of ['primary-again', 'active-again']) {
         expect(
             post.mock.calls.some(
                 ([value]) =>
@@ -262,6 +270,26 @@ it('labels main-search XHR results while leaving their query unchanged', () => {
                 value.type === 'bt-live-listings' &&
                 value.payload.key === 'native' &&
                 value.payload.ids.includes('main-item')
+        )
+    ).toBe(true)
+})
+
+it('rejects a duplicate failed subscription so the coordinator cannot hand off its working source', () => {
+    const post = vi.spyOn(window, 'postMessage').mockImplementation(() => {})
+    const { secondary, command, Socket } = setup()
+    secondary.dispatchEvent(new Event('error'))
+    command({
+        action: 'add',
+        id: 'failed-again',
+        url: 'https://www.pathofexile.com/trade/search/League/secondary',
+    })
+    expect(Socket.instances).toHaveLength(2)
+    expect(
+        post.mock.calls.some(
+            ([value]) =>
+                value.type === 'bt-live-reply' &&
+                value.payload.id === 'failed-again' &&
+                value.payload.ok === false
         )
     ).toBe(true)
 })

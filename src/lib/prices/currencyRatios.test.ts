@@ -21,7 +21,7 @@ vi.mock('wxt/browser', () => ({
 }))
 import { browser } from 'wxt/browser'
 import { getCurrencyRatios } from './currencyRatios'
-import { currentLocation } from '../poe-trade/location'
+import { currentLocation } from '../../integrations/poe-trade/location'
 
 it('uses a decoded PoE2 PC league and converts divine reference prices into chaos ratios', async () => {
     const result = await getCurrencyRatios(

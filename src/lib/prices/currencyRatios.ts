@@ -1,9 +1,9 @@
-import { economyLeague } from './league'
-import { decodeCurrencyOverview } from './currency'
+import { economyLeague } from '../../integrations/poe-ninja/league'
+import { decodeCurrencyOverview } from '../../integrations/poe-ninja/currency'
 import type { QueryClient } from '@tanstack/react-query'
 import { browser } from 'wxt/browser'
-import { currentLocation } from '../poe-trade/location'
-import { getValue } from '../../lib/storage'
+import { currentLocation } from '../../integrations/poe-trade/location'
+import { getValue } from '../storage'
 
 const slugify = (value: string) => value.trim().toLowerCase().replace(/\s+/g, '-')
 type Location = ReturnType<typeof currentLocation>

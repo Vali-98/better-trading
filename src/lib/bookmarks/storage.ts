@@ -1,3 +1,4 @@
+import { browser } from 'wxt/browser'
 import { currentLocation } from '../../integrations/poe-trade/location'
 import { getValue, setValue } from '../storage'
 
@@ -34,4 +35,15 @@ export const saveTrades = (id: string, trades: Trade[]) =>
 export function tradeUrl(trade: Trade) {
     const { league } = currentLocation()
     return `https://www.pathofexile.com/trade${trade.location.version === '2' ? '2' : ''}/${trade.location.type}/${league}/${trade.location.slug}`
+}
+
+// Remove the visible folder first. A failed content cleanup leaves recoverable,
+// unreachable data rather than an existing folder with its trades erased.
+export async function removeFolder(id: string) {
+    await saveFolders((await getFolders()).filter((folder) => folder.id !== id))
+    try {
+        await browser.storage.local.remove(`bookmark-trades--${id}`)
+    } catch {
+        // The folder is removed; its orphaned trades may be cleaned up later.
+    }
 }

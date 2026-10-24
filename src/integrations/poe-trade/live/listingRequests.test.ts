@@ -52,3 +52,40 @@ it('ignores late responses after cleanup and restores the original fetch', async
     expect(complete).not.toHaveBeenCalled()
     expect(window.fetch).toBe(fetch)
 })
+
+it('passes native fetch and XHR through when an observer cannot identify a request', async () => {
+    vi.useFakeTimers()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const fetch = vi.fn().mockResolvedValue(new Response('{"result":[]}'))
+    const open = vi.spyOn(XMLHttpRequest.prototype, 'open').mockImplementation(() => {})
+    vi.stubGlobal('fetch', fetch)
+    stop = installListingRequests(() => {
+        throw new Error('Schema changed')
+    }, vi.fn())
+    const url = 'https://www.pathofexile.com/api/trade/fetch/token'
+    expect((await window.fetch(url)).status).toBe(200)
+    const xhr = new XMLHttpRequest()
+    expect(() => xhr.open('GET', url)).not.toThrow()
+    expect(open).toHaveBeenCalledWith('GET', url)
+    expect(fetch).toHaveBeenCalledWith(url)
+    stop()
+    open.mockRestore()
+    warn.mockRestore()
+})
+
+it('preserves the native response when listing observation fails', async () => {
+    vi.useFakeTimers()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const fetch = vi.fn().mockResolvedValue(new Response('{"result":[]}'))
+    vi.stubGlobal('fetch', fetch)
+    stop = installListingRequests(
+        (url) => ({ url, context: 'source' }),
+        () => {
+            throw new Error('Enhancer failed')
+        }
+    )
+    const response = await window.fetch('https://www.pathofexile.com/api/trade/fetch/token')
+    await vi.advanceTimersByTimeAsync(10)
+    expect(await response.json()).toEqual({ result: [] })
+    warn.mockRestore()
+})

@@ -1,8 +1,9 @@
+import { subscribePageUpdates } from './page/updates'
+import { installEnhancer, disposeEnhancer } from './results/enhancers/isolation'
 import { enhanceCopyItem } from '../integrations/poe-trade/copyItem'
 import resultsCss from '../integrations/poe-trade/results.css?inline'
 import {
     resultRows,
-    tradeRoot,
     hasResultRows,
     isSearchElement,
     isModNode,
@@ -12,7 +13,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { useSettingsStore } from '../stores/settings'
 import { usePinnedStore } from '../stores/pinned'
 import { currentLocation } from '../integrations/poe-trade/location'
-import { getCurrencyRatios } from '../integrations/poe-ninja/currencyRatios'
+import { getCurrencyRatios } from './prices/currencyRatios'
 import { createSimilarGroupState, regroupSimilarRows } from './results/similarGroups'
 import { addEquivalentPrices } from './results/enhancers/equivalentPricing'
 import { addPinButton } from './results/enhancers/pinning'
@@ -33,15 +34,19 @@ export function startResultsController(client: QueryClient) {
     let pending = false
     let retryTimer: ReturnType<typeof setTimeout> | undefined
     let scheduled: ReturnType<typeof setTimeout> | undefined
+    let ratioRequest:
+        { key: string; value?: Record<string, number>; retryAfter?: number } | undefined
+    const pricedRows = new Set<HTMLElement>()
     const cleanups = new Map<HTMLElement, (() => void)[]>()
     const clearEnhancements = () => {
         for (const [row, disposers] of cleanups) {
-            disposers.forEach((dispose) => dispose())
-            clearHighlightedStats(row)
+            disposers.forEach(disposeEnhancer)
+            disposeEnhancer(() => clearHighlightedStats(row))
             row.removeAttribute('bt-enhanced')
             row.removeAttribute('bt-regroup-state')
         }
         cleanups.clear()
+        pricedRows.clear()
     }
     const schedule = () => {
         if (stopped || scheduled !== undefined) return
@@ -63,61 +68,87 @@ export function startResultsController(client: QueryClient) {
                 usePinnedStore.getState().setPinned([])
             for (const [row, disposers] of cleanups)
                 if (!row.isConnected) {
-                    disposers.forEach((dispose) => dispose())
+                    disposers.forEach(disposeEnhancer)
                     cleanups.delete(row)
+                    pricedRows.delete(row)
                 }
             const disabled = useSettingsStore.getState().disabled
             const context = currentLocation()
-            let ratios: Record<string, number> = {}
+            const ratioKey = `${context.version}/${context.league}`
             if (
                 !disabled.includes('equivalent-pricings') &&
                 context.league &&
-                rows.some((row) => !cleanups.has(row))
+                (!ratioRequest ||
+                    ratioRequest.key !== ratioKey ||
+                    (ratioRequest.retryAfter !== undefined &&
+                        Date.now() >= ratioRequest.retryAfter))
             ) {
-                try {
-                    ratios = await getCurrencyRatios(client, context)
-                } catch {
-                    if (!retryTimer)
-                        retryTimer = setTimeout(() => {
-                            retryTimer = undefined
-                            if (!stopped) {
-                                clearEnhancements()
-                                void process()
-                            }
-                        }, 30000)
-                }
+                const request: NonNullable<typeof ratioRequest> = { key: ratioKey }
+                ratioRequest = request
+                // Pricing never delays copy, links, pinning, or other row enhancements.
+                void getCurrencyRatios(client, context)
+                    .then((value) => {
+                        if (stopped || ratioRequest !== request) return
+                        request.value = value
+                        schedule()
+                    })
+                    .catch(() => {
+                        if (stopped || ratioRequest !== request) return
+                        request.retryAfter = Date.now() + 30_000
+                        clearTimeout(retryTimer)
+                        retryTimer = setTimeout(schedule, 30_000)
+                    })
             }
+            const ratios = ratioRequest?.key === ratioKey ? ratioRequest.value : undefined
             if (stopped) return
-            const needles = statNeedles()
+            if (disabled !== useSettingsStore.getState().disabled) {
+                pending = true
+                return
+            }
+            let needles: RegExp[] = []
+            installEnhancer('Stat filter matching', [], () => {
+                needles = statNeedles()
+            })
             const similarGroup = createSimilarGroupState()
             for (const row of rows) {
-                clearHighlightedStats(row)
-                if (!disabled.includes('highlight-stat-filters'))
-                    highlightMatchingStats(row, needles)
+                if (!row.isConnected) continue
+                installEnhancer('Stat highlighting', [], () => {
+                    clearHighlightedStats(row)
+                    if (!disabled.includes('highlight-stat-filters'))
+                        highlightMatchingStats(row, needles)
+                })
                 if (!cleanups.has(row)) {
                     const disposers: (() => void)[] = []
                     cleanups.set(row, disposers)
                     row.setAttribute('bt-enhanced', '')
-                    const add = (node: HTMLElement, parent: Element) => {
-                        parent.append(node)
-                        disposers.push(() => node.remove())
-                    }
-                    disposers.push(enhanceCopyItem(row, context.version))
-                    addPinButton(row, add)
+                    installEnhancer('Copy item', disposers, (_add, cleanup) =>
+                        cleanup(enhanceCopyItem(row, context.version))
+                    )
+                    installEnhancer('Pinning', disposers, (add) => addPinButton(row, add))
                     if (!disabled.includes('item-reference-links'))
-                        addItemLinks(
-                            row,
-                            context.version,
-                            add,
-                            useResultsStore.getState().items.get(row.dataset.id ?? '')
+                        installEnhancer('Item links', disposers, (add) =>
+                            addItemLinks(
+                                row,
+                                context.version,
+                                add,
+                                useResultsStore.getState().items.get(row.dataset.id ?? '')
+                            )
                         )
                     if (!disabled.includes('maximum-sockets') && context.version === '1')
-                        addSocketWarning(row, add)
-                    if (!disabled.includes('equivalent-pricings'))
+                        installEnhancer('Socket warning', disposers, (add) =>
+                            addSocketWarning(row, add)
+                        )
+                }
+                if (!disabled.includes('equivalent-pricings') && ratios && !pricedRows.has(row)) {
+                    installEnhancer('Equivalent pricing', cleanups.get(row)!, (add) =>
                         addEquivalentPrices(row, ratios, add, context.version)
+                    )
+                    pricedRows.add(row)
                 }
                 if (!disabled.includes('regroup-similars'))
-                    regroupSimilarRows(row, similarGroup, cleanups)
+                    installEnhancer('Similar grouping', [], () =>
+                        regroupSimilarRows(row, similarGroup, cleanups)
+                    )
             }
         } finally {
             running = false
@@ -127,45 +158,23 @@ export function startResultsController(client: QueryClient) {
             }
         }
     }
-    const observer = new MutationObserver((mutations) => {
+    const unsubscribePage = subscribePageUpdates(({ mutations, contextChanged }) => {
         const newRows = resultRows().some((row) => !row.hasAttribute('bt-enhanced'))
         const changedSearch = mutations.some((mutation) => isSearchElement(mutation.target))
         const changedMods = mutations.some((mutation) => isModNode(mutation.target))
-        if (changedMods) {
-            const needles = statNeedles()
-            for (const row of resultRows(true)) {
-                clearHighlightedStats(row)
-                if (!useSettingsStore.getState().disabled.includes('highlight-stat-filters'))
-                    highlightMatchingStats(row, needles)
-            }
-        }
-        if (newRows || changedSearch || !hasResultRows()) schedule()
-    })
-    observer.observe(tradeRoot(), {
-        childList: true,
-        characterData: true,
-        subtree: true,
-    })
-    const onSearchInput = (event: Event) => {
-        if (isSearchElement(event.target)) schedule()
-    }
-    document.addEventListener('input', onSearchInput, true)
+        if (newRows || changedSearch || changedMods || contextChanged || !hasResultRows())
+            schedule()
+    }, 'Result enhancement updates')
     const unsubscribeItems = useResultsStore.subscribe((state, previous) => {
         if (useSettingsStore.getState().disabled.includes('item-reference-links')) return
         for (const [row, disposers] of cleanups) {
             const id = row.dataset.id ?? ''
             const item = state.items.get(id)
             if (!row.isConnected || !item || item === previous.items.get(id)) continue
-            row.querySelectorAll('.bt-item-links').forEach((node) => node.remove())
-            addItemLinks(
-                row,
-                currentLocation().version,
-                (node, parent) => {
-                    parent.append(node)
-                    disposers.push(() => node.remove())
-                },
-                item
-            )
+            installEnhancer('Item links update', disposers, (add) => {
+                row.querySelectorAll('.bt-item-links').forEach((node) => node.remove())
+                addItemLinks(row, currentLocation().version, add, item)
+            })
         }
     })
     const unsubscribeSettings = useSettingsStore.subscribe((state, old) => {
@@ -187,8 +196,7 @@ export function startResultsController(client: QueryClient) {
         stopped = true
         clearTimeout(retryTimer)
         clearTimeout(scheduled)
-        observer.disconnect()
-        document.removeEventListener('input', onSearchInput, true)
+        unsubscribePage()
         unsubscribe()
         unsubscribeItems()
         unsubscribeSettings()

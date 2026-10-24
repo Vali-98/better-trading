@@ -16,3 +16,8 @@ export interface ItemPrice {
     mapTier?: number
     sparkLine: { data: (number | null)[]; totalChange?: number }
 }
+
+export interface ItemPriceOverview {
+    prices: ItemPrice[]
+    complete: boolean
+}

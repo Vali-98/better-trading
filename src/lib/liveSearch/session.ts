@@ -1,11 +1,16 @@
-import { installListingRequests } from './listingRequests'
-import { decodeLiveMessage, parseLiveSearch, searchFromSocket } from './protocol'
-import type { LiveSearch, LiveState, LiveSubscription } from '../../../models/liveSearch'
+import { installListingRequests } from '../../integrations/poe-trade/live/listingRequests'
+import {
+    observeNativeSockets,
+    routeListingRequest,
+} from '../../integrations/poe-trade/live/transport'
+import { decodeLiveMessage, parseLiveSearch } from '../../integrations/poe-trade/live/protocol'
+import type { LiveSearch, LiveState, LiveSubscription } from '../../models/liveSearch'
 
 interface Subscription {
     search: LiveSearch
     status: LiveSubscription['status']
     socket?: WebSocket
+    listeners?: AbortController
     message?: string
     enabled: boolean
     settle?: (ok: boolean, message?: string) => void
@@ -16,11 +21,12 @@ interface Job {
     subscription: Subscription
     expires: number
 }
-export function installLiveBridge() {
+export function installLiveSession() {
     const OriginalSocket = window.WebSocket
     const listeners = new AbortController()
     const subscriptions = new Map<string, Subscription>()
     const timers = new Set<ReturnType<typeof setTimeout>>()
+    let nativeListeners: AbortController | undefined
     let native: WebSocket | undefined
     let nativeSearch: LiveSearch | undefined
     let nativeAuthenticated = false
@@ -57,6 +63,8 @@ export function installLiveBridge() {
     const reply = (id: string, ok: boolean, message?: string) =>
         post('bt-live-reply', { id, ok, message })
     const pause = (subscription: Subscription, message?: string) => {
+        subscription.listeners?.abort()
+        subscription.listeners = undefined
         subscription.socket?.close()
         subscription.socket = undefined
         subscription.status = message ? 'error' : 'paused'
@@ -146,27 +154,19 @@ export function installLiveBridge() {
     const rewrite = (
         value: string | URL
     ): { url: string | URL; job?: Job; search: LiveSearch } | undefined => {
-        const url = new URL(String(value), location.href)
-        if (url.origin !== location.origin || !/^\/api\/trade2?\/fetch\//.test(url.pathname))
-            return undefined
-        if (current && decodeURIComponent(url.pathname.split('/').pop()!) === current.token) {
-            url.searchParams.set('query', current.subscription.search.key)
-            return { url: url.href, job: current, search: current.subscription.search }
-        }
-        if (nativeSearch && url.searchParams.get('query') === nativeSearch.key) {
+        const request = routeListingRequest(
+            value,
+            current ? { token: current.token, search: current.subscription.search } : undefined,
+            nativeSearch
+        )
+        if (request)
             return {
-                url: value,
-                search: {
-                    ...nativeSearch,
-                    label:
-                        document.title
-                            .replace(/^\(\d+\)\s*/, '')
-                            .trim()
-                            .slice(0, 100) || nativeSearch.label,
-                },
+                url: request.url,
+                search: request.search,
+                job: request.added ? current : undefined,
             }
-        }
     }
+
     const complete = (
         request: NonNullable<ReturnType<typeof rewrite>>,
         status: number,
@@ -176,46 +176,36 @@ export function installLiveBridge() {
         if (request.job) fetched(request.job, status, data)
         else if (status >= 200 && status < 300) publishListings(data, request.search)
     }
-    const Socket = new Proxy(OriginalSocket, {
-        construct(Target, args) {
-            const socket = Reflect.construct(Target, args) as WebSocket
-            if (stopped) return socket
-            let search: LiveSearch
-            try {
-                search = searchFromSocket(String(args[0]), document.title)
-                if (new URL(search.url).origin !== location.origin) return socket
-            } catch {
-                return socket
-            }
-            native = socket
-            nativeSearch = search
-            nativeAuthenticated = false
-            pauseAttached()
-            socket.addEventListener(
-                'message',
-                (event) => {
-                    if (native !== socket) return
-                    const message = decodeLiveMessage(event.data)
-                    if (message?.auth && !nativeAuthenticated) {
-                        nativeAuthenticated = true
-                        publish()
-                        resumeAttached(socket)
-                    }
-                },
-                { signal: listeners.signal }
-            )
-            socket.addEventListener(
-                'close',
-                () => {
-                    if (native !== socket) return
-                    nativeAuthenticated = false
-                    pauseAttached()
-                },
-                { signal: listeners.signal }
-            )
-            publish()
-            return socket
-        },
+    const stopNativeSockets = observeNativeSockets((socket, search) => {
+        nativeListeners?.abort()
+        nativeListeners = new AbortController()
+        native = socket
+        nativeSearch = search
+        nativeAuthenticated = false
+        pauseAttached()
+        socket.addEventListener(
+            'message',
+            (event) => {
+                if (native !== socket) return
+                const message = decodeLiveMessage(event.data)
+                if (message?.auth && !nativeAuthenticated) {
+                    nativeAuthenticated = true
+                    publish()
+                    resumeAttached(socket)
+                }
+            },
+            { signal: nativeListeners.signal }
+        )
+        socket.addEventListener(
+            'close',
+            () => {
+                if (native !== socket) return
+                nativeAuthenticated = false
+                pauseAttached()
+            },
+            { signal: nativeListeners.signal }
+        )
+        publish()
     })
     const connect = (subscription: Subscription, id?: string, settledCallback?: () => void) => {
         if (!nativeAuthenticated || !nativeSearch || native?.readyState !== OriginalSocket.OPEN) {
@@ -242,6 +232,8 @@ export function installLiveBridge() {
             return
         }
         const socket = new OriginalSocket(subscription.search.socket)
+        const socketListeners = new AbortController()
+        subscription.listeners = socketListeners
         subscription.socket = socket
         subscription.status = 'connecting'
         subscription.message = undefined
@@ -255,6 +247,7 @@ export function installLiveBridge() {
         subscription.settle = (ok, message) => {
             if (settled) return
             settled = true
+            subscription.settle = undefined
             clearTimeout(timeout)
             timers.delete(timeout)
             if (id) reply(id, ok, message)
@@ -292,7 +285,7 @@ export function installLiveBridge() {
                 })
                 drain()
             },
-            { signal: listeners.signal }
+            { signal: socketListeners.signal }
         )
         socket.addEventListener(
             'close',
@@ -301,7 +294,7 @@ export function installLiveBridge() {
                 pause(subscription, 'Connection closed. Resume to reconnect.')
                 publish()
             },
-            { signal: listeners.signal }
+            { signal: socketListeners.signal }
         )
         socket.addEventListener(
             'error',
@@ -310,7 +303,7 @@ export function installLiveBridge() {
                 pause(subscription, 'Connection failed. Resume to reconnect.')
                 publish()
             },
-            { signal: listeners.signal }
+            { signal: socketListeners.signal }
         )
         publish()
     }
@@ -332,7 +325,6 @@ export function installLiveBridge() {
         }
         next()
     }
-    window.WebSocket = Socket
     const stopListingRequests = installListingRequests((value) => {
         const request = rewrite(value)
         return request ? { url: request.url, context: request } : undefined
@@ -345,10 +337,11 @@ export function installLiveBridge() {
         publish()
         stopped = true
         listeners.abort()
+        nativeListeners?.abort()
         for (const timer of timers) clearTimeout(timer)
         queue = []
         current = undefined
-        if (window.WebSocket === Socket) window.WebSocket = OriginalSocket
+        stopNativeSockets()
         stopListingRequests()
     }
     window.addEventListener(
@@ -385,12 +378,17 @@ export function installLiveBridge() {
                     const existing = subscriptions.get(search.key)
                     if (existing) {
                         // Adding a bookmark or merging must not undo a manual pause.
+                        const ready =
+                            existing.status === 'active' &&
+                            existing.socket?.readyState === OriginalSocket.OPEN
                         reply(
                             input.id,
-                            existing.status !== 'connecting',
-                            existing.status === 'connecting'
-                                ? 'This search is already connecting.'
-                                : undefined
+                            ready,
+                            ready
+                                ? undefined
+                                : existing.enabled
+                                  ? 'This search is not connected. Resume it in the destination first.'
+                                  : 'This search is manually paused in the destination. Resume it there first.'
                         )
                         return
                     }

@@ -1,5 +1,6 @@
 import { createSearchInputs, placeSearchWarning } from '../integrations/poe-trade/searchInputs'
-import { tradeRoot } from '../integrations/poe-trade/results'
+import { subscribePageUpdates } from './page/updates'
+import { reportIntegrationIssue } from '../integrations/diagnostics'
 import { decorateMetaTags, restoreMetaTags } from '../integrations/poe-trade/metaTags'
 import { startSearchFocusShortcuts } from './searchFocusShortcuts'
 import { consumeSearchShortcuts } from './searchShortcuts'
@@ -27,27 +28,28 @@ export function startSearchEnhancements() {
     const process = () => {
         scheduled = undefined
         const { disabled } = useSettingsStore.getState()
-        if (disabled.includes('coloured-meta-tags')) restoreMetaTags()
-        else decorateMetaTags()
+        try {
+            if (disabled.includes('coloured-meta-tags')) restoreMetaTags()
+            else decorateMetaTags()
+        } catch {
+            reportIntegrationIssue('enhancers', 'Meta tag decoration failed')
+        }
     }
     const schedule = () => {
         if (scheduled === undefined) scheduled = setTimeout(process, 0)
     }
-    const observer = new MutationObserver((mutations) => {
+    const stopPageUpdates = subscribePageUpdates(({ mutations }) => {
         for (const mutation of mutations) {
-            if (mutation.type === 'attributes' && mutation.target instanceof HTMLInputElement)
+            if (
+                mutation.type === 'attributes' &&
+                mutation.attributeName === 'placeholder' &&
+                mutation.target instanceof HTMLInputElement
+            )
                 rememberInput(mutation.target, mutation.oldValue ?? '')
         }
         rememberInputs()
         schedule()
-    })
-    observer.observe(tradeRoot(), {
-        attributes: true,
-        attributeFilter: ['placeholder'],
-        attributeOldValue: true,
-        childList: true,
-        subtree: true,
-    })
+    }, 'Search decoration updates')
     const warning = document.createElement('div')
     warning.className = 'bt-search-shortcut-warning'
     warning.setAttribute('role', 'status')
@@ -150,7 +152,7 @@ export function startSearchEnhancements() {
     process()
     return () => {
         clearTimeout(scheduled)
-        observer.disconnect()
+        stopPageUpdates()
         stopFocusShortcuts()
         window.removeEventListener('keydown', onKeyDown, true)
         window.removeEventListener('keypress', suppressEnterEvent, true)

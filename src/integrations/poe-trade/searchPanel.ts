@@ -42,3 +42,24 @@ export function searchedStats() {
         ),
     ]
 }
+
+// Stable user-visible filter state; exclude extension decoration attributes.
+export function statFilterState() {
+    return JSON.stringify(
+        Array.from(
+            document.querySelectorAll<HTMLElement>(
+                '.search-advanced-pane .filter-group-body .filter'
+            )
+        )
+            .filter((filter) => filter.querySelector('.filter-title .mutate-type'))
+            .map((filter) => [
+                filter.querySelector('.filter-title')?.textContent?.trim(),
+                filter.classList.contains('disabled'),
+                Array.from(filter.querySelectorAll('input,select'), (input) =>
+                    input instanceof HTMLInputElement
+                        ? [input.value, input.checked]
+                        : (input as HTMLSelectElement).value
+                ),
+            ])
+    )
+}

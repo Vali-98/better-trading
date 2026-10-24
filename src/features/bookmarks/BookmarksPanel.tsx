@@ -1,11 +1,10 @@
 import { useLiveSearchTargets } from '../liveSearch/useLiveSearchTargets'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { browser } from 'wxt/browser'
 import { Icon } from '../../components/Icon'
 import { SortableItem, SortableList } from '../../components/Sortable'
 import { currentLocation } from '../../integrations/poe-trade/location'
-import { getFolders, saveFolders, type Folder } from '../../lib/bookmarks/storage'
+import { getFolders, saveFolders, removeFolder, type Folder } from '../../lib/bookmarks/storage'
 import { bookmarkQueryKeys } from '../../lib/bookmarks/queryKeys'
 import { BackupControls } from './BackupControls'
 import { reordered } from './bookmarkUtils'
@@ -29,6 +28,10 @@ export function BookmarksPanel() {
         },
         onError: () => client.invalidateQueries({ queryKey: bookmarkQueryKeys.folders() }),
         onSuccess: () => client.invalidateQueries({ queryKey: bookmarkQueryKeys.all }),
+    })
+    const removeMutation = useMutation({
+        mutationFn: removeFolder,
+        onSettled: () => client.invalidateQueries({ queryKey: bookmarkQueryKeys.all }),
     })
     const reorderMutation = useMutation({
         mutationFn: saveFolders,
@@ -67,7 +70,7 @@ export function BookmarksPanel() {
                 </button>
             </div>
             {folders.isPending && <p role="status">Loading bookmarks…</p>}
-            {(folders.error || mutation.error) && (
+            {(folders.error || mutation.error || removeMutation.error) && (
                 <p role="alert">Unable to save or load bookmarks.</p>
             )}
             <div className="bt-folder-list">
@@ -100,14 +103,7 @@ export function BookmarksPanel() {
                                         },
                                     ])
                                 }
-                                onRemove={async () => {
-                                    await browser.storage.local.remove(
-                                        `bookmark-trades--${folder.id}`
-                                    )
-                                    mutation.mutate(
-                                        allFolders.filter((item) => item.id !== folder.id)
-                                    )
-                                }}
+                                onRemove={() => removeMutation.mutateAsync(folder.id)}
                             />
                         </SortableItem>
                     ))}

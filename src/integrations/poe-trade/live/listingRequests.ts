@@ -1,3 +1,5 @@
+import { reportIntegrationIssue } from '../../diagnostics'
+
 interface ListingRequest<T> {
     url: string | URL
     context: T
@@ -14,7 +16,20 @@ export function installListingRequests<T>(
     const listeners = new AbortController()
     let active = true
     const deliver = (request: ListingRequest<T>, status: number, data?: unknown) => {
-        if (active) complete(request.context, status, data)
+        if (!active) return
+        try {
+            complete(request.context, status, data)
+        } catch {
+            reportIntegrationIssue('poe-trade', 'Listing observation failed')
+        }
+    }
+    const identifySafely = (url: string | URL) => {
+        try {
+            return identify(url)
+        } catch {
+            reportIntegrationIssue('poe-trade', 'Listing request identification failed')
+            return undefined
+        }
     }
     const open: typeof originalOpen = function (
         this: XMLHttpRequest,
@@ -23,7 +38,7 @@ export function installListingRequests<T>(
         ...args: unknown[]
     ) {
         if (!active) return Reflect.apply(originalOpen, this, [method, url, ...args])
-        const request = identify(url)
+        const request = identifySafely(url)
         if (request)
             this.addEventListener(
                 'loadend',
@@ -46,7 +61,7 @@ export function installListingRequests<T>(
     const fetch: typeof originalFetch = async function (this: Window, ...args) {
         if (!active) return originalFetch.apply(this, args)
         const url = args[0] instanceof Request ? args[0].url : args[0]
-        const request = identify(url)
+        const request = identifySafely(url)
         if (request && String(request.url) !== String(url))
             args[0] = args[0] instanceof Request ? new Request(request.url, args[0]) : request.url
         try {

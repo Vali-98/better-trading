@@ -1,3 +1,4 @@
+import { subscribePageUpdates } from '../../lib/page/updates'
 import { createLiveToolbar } from './toolbar'
 import { browser } from 'wxt/browser'
 import { useSettingsStore } from '../../stores/settings'
@@ -22,6 +23,7 @@ export function startLiveSearchEnhancer() {
     let busy = false
     let style: HTMLStyleElement | undefined
     let timer: ReturnType<typeof setInterval> | undefined
+    let stopPageUpdates: (() => void) | undefined
     let generation = 0
     const pending = new Map<
         string,
@@ -168,6 +170,8 @@ export function startLiveSearchEnhancer() {
         running = false
         window.postMessage({ type: 'bt-live-stop' }, location.origin)
         if (timer) clearInterval(timer)
+        stopPageUpdates?.()
+        stopPageUpdates = undefined
         toolbar.remove()
         style?.remove()
         style = undefined
@@ -211,6 +215,10 @@ export function startLiveSearchEnhancer() {
                 window.postMessage({ type: 'bt-live-stop' }, location.origin)
                 return
             }
+            stopPageUpdates = subscribePageUpdates(() => {
+                badges()
+                render()
+            }, 'Live search controls')
             command('status')
             timer = setInterval(() => void heartbeat(), 3000)
             void heartbeat()

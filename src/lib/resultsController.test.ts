@@ -8,6 +8,7 @@ vi.mock('wxt/browser', () => ({
         storage: { local: { get: async () => ({}), set: async () => {} } },
     },
 }))
+import * as pinning from './results/enhancers/pinning'
 import { startResultsController } from './resultsController'
 import { useSettingsStore } from '../stores/settings'
 import { usePinnedStore } from '../stores/pinned'
@@ -49,6 +50,7 @@ it('converts chaos to divine on PoE2 and normalizes primary currency rates', asy
 afterEach(() => {
     stop()
     document.body.innerHTML = ''
+    vi.restoreAllMocks()
 })
 it('does not reprocess mixed exchange rows in response to its own grouping writes', async () => {
     const exchange = document.createElement('div')
@@ -144,4 +146,31 @@ it('uses the bundled PoE2 chaos image for chaos-equivalent prices', async () => 
     await settle()
     const icon = document.querySelector<HTMLImageElement>('.bt-equivalent-pricings img')!
     expect(icon.src).toContain('/assets/images/bookmark-folder/poe2/items/chaos.png')
+})
+
+it('rolls back a failing enhancer while other enhancers and later rows continue', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(pinning, 'addPinButton').mockImplementation((row, add) => {
+        const partial = document.createElement('button')
+        partial.className = 'partial-pin'
+        add(partial, row)
+        throw new Error('Host pin markup changed')
+    })
+    stop = startResultsController(new QueryClient())
+    await settle()
+    expect(document.querySelectorAll('.partial-pin')).toHaveLength(0)
+    expect(document.querySelectorAll('.bt-maximum-sockets')).toHaveLength(2)
+    stop()
+    expect(document.querySelectorAll('.bt-maximum-sockets')).toHaveLength(0)
+})
+
+it('does not block unrelated enhancements while pricing is unavailable', async () => {
+    vi.mocked(browser.runtime.sendMessage).mockImplementation(
+        (() => new Promise(() => {})) as typeof browser.runtime.sendMessage
+    )
+    useSettingsStore.setState({ disabled: [] })
+    stop = startResultsController(new QueryClient())
+    await settle()
+    expect(document.querySelectorAll('.bt-pin-button')).toHaveLength(2)
+    expect(document.querySelectorAll('.bt-maximum-sockets')).toHaveLength(2)
 })
