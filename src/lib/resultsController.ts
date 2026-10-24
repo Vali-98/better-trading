@@ -1,3 +1,4 @@
+import { enhanceCopyItem } from '../integrations/poe-trade/copyItem'
 import resultsCss from '../integrations/poe-trade/results.css?inline'
 import {
     resultRows,
@@ -101,6 +102,7 @@ export function startResultsController(client: QueryClient) {
                         parent.append(node)
                         disposers.push(() => node.remove())
                     }
+                    disposers.push(enhanceCopyItem(row, context.version))
                     addPinButton(row, add)
                     if (!disabled.includes('item-reference-links'))
                         addItemLinks(

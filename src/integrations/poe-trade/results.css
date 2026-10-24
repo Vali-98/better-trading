@@ -97,3 +97,18 @@
 .results:not(.compact) .bt-equivalent-pricings {
     background: rgba(255, 255, 255, 0.1);
 }
+
+/* PoE2 hides copy when extended item text is missing. The adapter supplies it. */
+.resultset .row .left button.copy.bt-copy-fallback {
+    display: block !important;
+    opacity: 0 !important;
+    pointer-events: none;
+}
+.resultset .row:hover .left button.copy.bt-copy-fallback,
+.resultset .row:focus-within .left button.copy.bt-copy-fallback {
+    opacity: 1 !important;
+    pointer-events: auto;
+}
+.resultset .row .left button.copy.bt-copy-fallback ~ button.searchBy {
+    left: 40px !important;
+}
