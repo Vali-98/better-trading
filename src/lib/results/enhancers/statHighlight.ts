@@ -1,4 +1,5 @@
-import { searchedStats } from '../../searchPanel'
+import { resultMods } from '../../../integrations/poe-trade/results'
+import { searchedStats } from '../../../integrations/poe-trade/searchPanel'
 
 export function statNeedles() {
     return searchedStats().map(
@@ -11,14 +12,10 @@ export function statNeedles() {
 }
 
 export function highlightMatchingStats(row: HTMLElement, needles: RegExp[]) {
-    row.querySelectorAll<HTMLElement>(
-        '.explicitMod,.pseudoMod,.implicitMod,.item-mod--explicit,.item-mod--pseudo,.item-mod--implicit'
-    ).forEach((mod) => {
-        const statText =
-            mod.querySelector<HTMLElement>('[data-field^="stat."]')?.textContent ?? mod.textContent
-        if (!needles.some((needle) => needle.test(statText ?? ''))) return
-        mod.classList.add('bt-highlight-stat-filters')
-    })
+    for (const { node, text } of resultMods(row)) {
+        if (needles.some((needle) => needle.test(text)))
+            node.classList.add('bt-highlight-stat-filters')
+    }
 }
 
 export function clearHighlightedStats(row: HTMLElement) {

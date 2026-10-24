@@ -1,5 +1,5 @@
-import { currentLocation } from './bookmarks/storage'
-import { recommendTitle } from './searchPanel'
+import { currentLocation } from '../integrations/poe-trade/location'
+import { recommendTitle } from '../integrations/poe-trade/searchPanel'
 import { getValue, setValue } from './storage'
 
 export interface HistoryEntry {

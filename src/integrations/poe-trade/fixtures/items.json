@@ -1,0 +1,20 @@
+[
+    {
+        "id": "unique-example",
+        "item": {
+            "name": "Mageblood",
+            "typeLine": "Heavy Belt",
+            "baseType": "Heavy Belt",
+            "frameType": 3
+        }
+    },
+    {
+        "id": "magic-example",
+        "item": {
+            "name": "",
+            "typeLine": "Robust Sadist Garb of the Yeti",
+            "baseType": "Sadist Garb",
+            "frameType": 1
+        }
+    }
+]

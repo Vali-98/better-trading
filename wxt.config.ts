@@ -27,7 +27,7 @@ export default {
         host_permissions: ['https://poe.ninja/*'],
         web_accessible_resources: [
             {
-                resources: ['assets/images/*'],
+                resources: ['assets/images/*', 'item-capture.js'],
                 matches: ['*://*.pathofexile.com/*', '*://pathofexile.com/*'],
             },
         ],

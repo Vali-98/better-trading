@@ -10,3 +10,44 @@ it('searches only the unique name from a double-line item header', () => {
     expect(new URL(links[0].href).searchParams.get('search')).toBe("Emperor's Might")
     expect(links[1].href).toBe('https://poedb.tw/us/Emperors_Might')
 })
+
+it.each([
+    [
+        {
+            name: '',
+            typeLine: 'Robust Sadist Garb of the Yeti',
+            baseType: 'Sadist Garb',
+            frameType: 1,
+        },
+        'Sadist Garb',
+    ],
+    [
+        {
+            name: 'Damnation Curtain',
+            typeLine: 'Sadist Garb',
+            baseType: 'Sadist Garb',
+            frameType: 2,
+        },
+        'Sadist Garb',
+    ],
+    [
+        { name: 'Mageblood', typeLine: 'Heavy Belt', baseType: 'Heavy Belt', frameType: 3 },
+        'Mageblood',
+    ],
+    [
+        {
+            name: 'Foulborn Mageblood',
+            typeLine: 'Heavy Belt',
+            baseType: 'Heavy Belt',
+            frameType: 3,
+        },
+        'Foulborn Mageblood',
+    ],
+])('prefers response item data over rendered names', (item, expected) => {
+    const row = document.createElement('div')
+    row.innerHTML =
+        '<div class="itemHeader"><span class="typeLine">Wrong rendered name</span></div>'
+    addItemLinks(row, '1', (node, parent) => parent.append(node), item)
+    const link = row.querySelector<HTMLAnchorElement>('.bt-item-links a')!
+    expect(new URL(link.href).searchParams.get('search')).toBe(expected)
+})

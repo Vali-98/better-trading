@@ -1,3 +1,4 @@
+import { currentLocation } from '../../integrations/poe-trade/location'
 import { getValue, setValue } from '../storage'
 
 export interface Trade {
@@ -30,17 +31,6 @@ export const saveFolders = (folders: Folder[]) => setValue('bookmark-folders', f
 export const saveTrades = (id: string, trades: Trade[]) =>
     setValue(`bookmark-trades--${id}`, trades)
 
-export function currentLocation(pathname = location.pathname) {
-    const parts = pathname.split('/').slice(1)
-    const version = parts[0] === 'trade2' ? '2' : '1'
-    const realm = ['xbox', 'sony', 'poe2'].includes(parts[2])
-    return {
-        version: version as '1' | '2',
-        type: parts[1],
-        league: realm ? `${parts[2]}/${parts[3]}` : parts[2],
-        slug: parts[realm ? 4 : 3],
-    }
-}
 export function tradeUrl(trade: Trade) {
     const { league } = currentLocation()
     return `https://www.pathofexile.com/trade${trade.location.version === '2' ? '2' : ''}/${trade.location.type}/${league}/${trade.location.slug}`

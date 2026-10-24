@@ -1,3 +1,4 @@
+import { similarResultKey, pinButtonContainer } from '../../integrations/poe-trade/results'
 export type SimilarGroupState = {
     previousHash: string
     original?: HTMLElement
@@ -14,14 +15,7 @@ export function regroupSimilarRows(
     state: SimilarGroupState,
     cleanups: Map<HTMLElement, (() => void)[]>
 ) {
-    const hash = [
-        row.querySelector('.profile-link [href]')?.getAttribute('href'),
-        row.querySelector('.itemHeader')?.textContent?.replace(/superior/i, ''),
-        row.querySelector('.price')?.textContent,
-    ]
-        .join('')
-        .replace(/\s/g, '')
-        .toLowerCase()
+    const hash = similarResultKey(row)
     if (hash !== state.previousHash) {
         state.original = row
         state.group = []
@@ -35,7 +29,7 @@ export function regroupSimilarRows(
         toggle = document.createElement('button')
         toggle.className = 'btn btn-default bt-group-button'
         toggle.dataset.state = 'hidden'
-        state.original.querySelector('.details .btns')?.append(toggle)
+        pinButtonContainer(state.original)?.append(toggle)
         const button = toggle
         cleanups.get(state.original)?.push(() => button.remove())
     }

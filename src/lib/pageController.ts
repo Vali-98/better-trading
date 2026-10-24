@@ -1,7 +1,8 @@
 import type { QueryClient } from '@tanstack/react-query'
-import { currentLocation, getFolders, getTrades } from './bookmarks/storage'
+import { currentLocation } from '../integrations/poe-trade/location'
+import { getFolders, getTrades } from './bookmarks/storage'
 import { recordCurrentSearch } from './history'
-import { recommendTitle } from './searchPanel'
+import { recommendTitle } from '../integrations/poe-trade/searchPanel'
 
 export function startPageController(client: QueryClient) {
     let previous = ''

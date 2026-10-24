@@ -1,0 +1,23 @@
+{
+    "lines": [
+        {
+            "name": "Mageblood",
+            "baseType": "Heavy Belt",
+            "variant": "5 Flasks",
+            "detailsId": "mageblood-5-flasks-heavy-belt",
+            "sparkLine": {
+                "totalChange": -20.98,
+                "data": [0, -8.65, -10.67, -16.87, -19.52, -23.97, -20.98]
+            }
+        },
+        {
+            "name": "Original Sin",
+            "baseType": "Amethyst Ring",
+            "detailsId": "original-sin-amethyst-ring",
+            "sparkLine": {
+                "totalChange": -13.96,
+                "data": [0, 0.48, -7.88, -6.71, -9.15, -10.24, -13.96]
+            }
+        }
+    ]
+}

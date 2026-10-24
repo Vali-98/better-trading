@@ -12,7 +12,8 @@ vi.mock('wxt/browser', () => ({
     },
 }))
 import { backup, deserialize, importFolders, serialize } from './export'
-import { currentLocation, getFolders, getTrades } from './storage'
+import { currentLocation } from '../../integrations/poe-trade/location'
+import { getFolders, getTrades } from './storage'
 const v1 =
     'eyJpY24iOiJleGFsdCIsInRpdCI6InRlc3QgZm9sZGVyIiwidHJzIjpbeyJ0aXQiOiJ0ZXN0IHRyYWRlIiwibG9jIjoic2VhcmNoOm93V0pRRWtpbCJ9XX0='
 const v2 =

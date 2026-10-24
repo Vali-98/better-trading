@@ -1,8 +1,17 @@
+import resultsCss from '../integrations/poe-trade/results.css?inline'
+import {
+    resultRows,
+    tradeRoot,
+    hasResultRows,
+    isSearchElement,
+    isModNode,
+} from '../integrations/poe-trade/results'
+import { useResultsStore } from '../stores/results'
 import type { QueryClient } from '@tanstack/react-query'
 import { useSettingsStore } from '../stores/settings'
 import { usePinnedStore } from '../stores/pinned'
-import { currentLocation } from './bookmarks/storage'
-import { getCurrencyRatios } from './results/currencyRatios'
+import { currentLocation } from '../integrations/poe-trade/location'
+import { getCurrencyRatios } from '../integrations/poe-ninja/currencyRatios'
 import { createSimilarGroupState, regroupSimilarRows } from './results/similarGroups'
 import { addEquivalentPrices } from './results/enhancers/equivalentPricing'
 import { addPinButton } from './results/enhancers/pinning'
@@ -16,8 +25,7 @@ import {
 
 export function startResultsController(client: QueryClient) {
     const style = document.createElement('style')
-    style.textContent =
-        '.bt-highlight-stat-filters{background:rgba(138,86,9,.35);color:#fff8e1!important}.bt-maximum-sockets{color:#e9bd66;text-align:center}.bt-equivalent-pricings{display:block;color:#aaa}.bt-equivalent-pricings img{height:20px;vertical-align:middle}[bt-regroup-state=\"hidden\"]{display:none!important}.bt-pinned{outline:1px solid #8a5609}.bt-pin-button{margin-left:4px}.bt-pinned-snapshot{box-sizing:border-box;width:100%;max-width:100%;min-width:0;background:#000;overflow:hidden}.bt-pinned-snapshot .middle{width:100%!important;max-width:100%;min-width:0}.bt-pinned-snapshot .itemPopupContainer,.bt-pinned-snapshot .itemRendered,.bt-pinned-snapshot .item-popup{max-width:100%!important;min-width:0!important;margin:0 auto;background:#000;box-sizing:border-box}.bt-pinned-snapshot .itemRendered{width:100%!important}.bt-pinned-snapshot .itemPopupAdditional{display:flex;padding:3px 0;background:#000}.bt-pinned-snapshot .itemPopupAdditional .s{width:33.33%;text-align:center}.bt-pinned-snapshot .price{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px;padding:5px 10px 10px;background:#000;color:#a38d6d}.bt-pinned-snapshot .price img{height:25px;width:auto}.bt-pinned-snapshot .price br,.bt-pinned-snapshot .price .currency-text span,.bt-pinned-snapshot .price .price-label{display:none}.bt-pinned-snapshot .newItemContainer .sockets{display:block}.resultset > div.row.bt-scroll-target{background-image:linear-gradient(rgba(180,145,35,.16),rgba(180,145,35,.16))!important}.bt-equivalent-pricings{color:#a38d6d}.bt-equivalent-pricings img{display:inline-block;height:20px;width:auto;vertical-align:middle}.results:not(.compact) .bt-equivalent-pricings{background:rgba(255,255,255,.1)}'
+    style.textContent = resultsCss
     document.head.append(style)
     let stopped = false
     let running = false
@@ -49,9 +57,7 @@ export function startResultsController(client: QueryClient) {
         }
         running = true
         try {
-            const rows = Array.from(
-                document.querySelectorAll<HTMLElement>('.resultset > div.row[data-id]')
-            ).filter((row) => !row.classList.contains('exchange'))
+            const rows = resultRows()
             if (!rows.length && usePinnedStore.getState().pinned.length)
                 usePinnedStore.getState().setPinned([])
             for (const [row, disposers] of cleanups)
@@ -97,11 +103,16 @@ export function startResultsController(client: QueryClient) {
                     }
                     addPinButton(row, add)
                     if (!disabled.includes('item-reference-links'))
-                        addItemLinks(row, context.version, add)
+                        addItemLinks(
+                            row,
+                            context.version,
+                            add,
+                            useResultsStore.getState().items.get(row.dataset.id ?? '')
+                        )
                     if (!disabled.includes('maximum-sockets') && context.version === '1')
                         addSocketWarning(row, add)
                     if (!disabled.includes('equivalent-pricings'))
-                        addEquivalentPrices(row, ratios, add)
+                        addEquivalentPrices(row, ratios, add, context.version)
                 }
                 if (!disabled.includes('regroup-similars'))
                     regroupSimilarRows(row, similarGroup, cleanups)
@@ -115,43 +126,46 @@ export function startResultsController(client: QueryClient) {
         }
     }
     const observer = new MutationObserver((mutations) => {
-        const newRows = Array.from(
-            document.querySelectorAll<HTMLElement>(
-                '.resultset > div.row[data-id]:not([bt-enhanced])'
-            )
-        ).some((row) => !row.classList.contains('exchange'))
-        const changedSearch = mutations.some(
-            (mutation) =>
-                mutation.target instanceof Element &&
-                Boolean(mutation.target.closest('.search-advanced-pane'))
-        )
-        const changedMods = mutations.some((mutation) => {
-            const target =
-                mutation.target instanceof Element ? mutation.target : mutation.target.parentElement
-            return Boolean(target?.closest('.item-mod,.explicitMod,.implicitMod,.pseudoMod'))
-        })
+        const newRows = resultRows().some((row) => !row.hasAttribute('bt-enhanced'))
+        const changedSearch = mutations.some((mutation) => isSearchElement(mutation.target))
+        const changedMods = mutations.some((mutation) => isModNode(mutation.target))
         if (changedMods) {
             const needles = statNeedles()
-            for (const row of document.querySelectorAll<HTMLElement>(
-                '.resultset > div.row[data-id]'
-            )) {
+            for (const row of resultRows(true)) {
                 clearHighlightedStats(row)
                 if (!useSettingsStore.getState().disabled.includes('highlight-stat-filters'))
                     highlightMatchingStats(row, needles)
             }
         }
-        if (newRows || changedSearch || !document.querySelector('.resultset > div.row')) schedule()
+        if (newRows || changedSearch || !hasResultRows()) schedule()
     })
-    observer.observe(document.querySelector('#trade')?.parentElement ?? document.body, {
+    observer.observe(tradeRoot(), {
         childList: true,
         characterData: true,
         subtree: true,
     })
     const onSearchInput = (event: Event) => {
-        if (event.target instanceof Element && event.target.closest('.search-advanced-pane'))
-            schedule()
+        if (isSearchElement(event.target)) schedule()
     }
     document.addEventListener('input', onSearchInput, true)
+    const unsubscribeItems = useResultsStore.subscribe((state, previous) => {
+        if (useSettingsStore.getState().disabled.includes('item-reference-links')) return
+        for (const [row, disposers] of cleanups) {
+            const id = row.dataset.id ?? ''
+            const item = state.items.get(id)
+            if (!row.isConnected || !item || item === previous.items.get(id)) continue
+            row.querySelectorAll('.bt-item-links').forEach((node) => node.remove())
+            addItemLinks(
+                row,
+                currentLocation().version,
+                (node, parent) => {
+                    parent.append(node)
+                    disposers.push(() => node.remove())
+                },
+                item
+            )
+        }
+    })
     const unsubscribeSettings = useSettingsStore.subscribe((state, old) => {
         if (state.disabled !== old.disabled) {
             clearEnhancements()
@@ -174,6 +188,7 @@ export function startResultsController(client: QueryClient) {
         observer.disconnect()
         document.removeEventListener('input', onSearchInput, true)
         unsubscribe()
+        unsubscribeItems()
         unsubscribeSettings()
         style.remove()
         for (const row of document.querySelectorAll<HTMLElement>('[bt-enhanced]'))

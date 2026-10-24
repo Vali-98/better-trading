@@ -1,0 +1,99 @@
+.bt-highlight-stat-filters {
+    background: rgba(138, 86, 9, 0.35);
+    color: #fff8e1 !important;
+}
+.bt-maximum-sockets {
+    color: #e9bd66;
+    text-align: center;
+}
+.bt-equivalent-pricings {
+    display: block;
+    color: #aaa;
+}
+.bt-equivalent-pricings img {
+    height: 20px;
+    vertical-align: middle;
+}
+[bt-regroup-state='hidden'] {
+    display: none !important;
+}
+.bt-pinned {
+    outline: 1px solid #8a5609;
+}
+.bt-pin-button {
+    margin-left: 4px;
+}
+.bt-pinned-snapshot {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background: #000;
+    overflow: hidden;
+}
+.bt-pinned-snapshot .middle {
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+}
+.bt-pinned-snapshot .itemPopupContainer,
+.bt-pinned-snapshot .itemRendered,
+.bt-pinned-snapshot .item-popup {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 auto;
+    background: #000;
+    box-sizing: border-box;
+}
+.bt-pinned-snapshot .itemRendered {
+    width: 100% !important;
+}
+.bt-pinned-snapshot .itemPopupAdditional {
+    display: flex;
+    padding: 3px 0;
+    background: #000;
+}
+.bt-pinned-snapshot .itemPopupAdditional .s {
+    width: 33.33%;
+    text-align: center;
+}
+.bt-pinned-snapshot .price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 5px 10px 10px;
+    background: #000;
+    color: #a38d6d;
+}
+.bt-pinned-snapshot .price img {
+    height: 25px;
+    width: auto;
+}
+.bt-pinned-snapshot .price br,
+.bt-pinned-snapshot .price .currency-text span,
+.bt-pinned-snapshot .price .price-label {
+    display: none;
+}
+.bt-pinned-snapshot .newItemContainer .sockets {
+    display: block;
+}
+.resultset > div.row.bt-scroll-target {
+    background-image: linear-gradient(
+        rgba(180, 145, 35, 0.16),
+        rgba(180, 145, 35, 0.16)
+    ) !important;
+}
+.bt-equivalent-pricings {
+    color: #a38d6d;
+}
+.bt-equivalent-pricings img {
+    display: inline-block;
+    height: 20px;
+    width: auto;
+    vertical-align: middle;
+}
+.results:not(.compact) .bt-equivalent-pricings {
+    background: rgba(255, 255, 255, 0.1);
+}

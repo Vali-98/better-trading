@@ -4,7 +4,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { browser } from 'wxt/browser'
 vi.mock('wxt/browser', () => ({
     browser: {
-        runtime: { sendMessage: vi.fn() },
+        runtime: { sendMessage: vi.fn(), getURL: (path: string) => `moz-extension://test${path}` },
         storage: { local: { get: async () => ({}), set: async () => {} } },
     },
 }))
@@ -123,4 +123,25 @@ it('highlights current item-mod markup that matches an active stat filter', asyn
             .querySelector('.item-mod--explicit')
             ?.classList.contains('bt-highlight-stat-filters')
     ).toBe(true)
+})
+
+it('uses the bundled PoE2 chaos image for chaos-equivalent prices', async () => {
+    window.history.replaceState({}, '', '/trade2/search/poe2/Standard/test')
+    document.querySelector('.price')!.innerHTML =
+        '<div data-field="price"><br><span>1</span><span class="currency-text"><span>Divine Orb</span></span></div>'
+    vi.mocked(browser.runtime.sendMessage).mockImplementation((async () => ({
+        lines: [
+            { id: 'chaos', primaryValue: 1 },
+            { id: 'divine', primaryValue: 100 },
+        ],
+        items: [
+            { id: 'chaos', detailsId: 'chaos-orb' },
+            { id: 'divine', detailsId: 'divine-orb' },
+        ],
+    })) as typeof browser.runtime.sendMessage)
+    useSettingsStore.setState({ disabled: [] })
+    stop = startResultsController(new QueryClient())
+    await settle()
+    const icon = document.querySelector<HTMLImageElement>('.bt-equivalent-pricings img')!
+    expect(icon.src).toContain('/assets/images/bookmark-folder/poe2/items/chaos.png')
 })

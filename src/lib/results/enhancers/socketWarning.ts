@@ -1,23 +1,15 @@
+import { readSocketDetails } from '../../../integrations/poe-trade/results'
 import type { AddNode } from './types'
 
 export function addSocketWarning(row: HTMLElement, add: AddNode) {
-    const level = Number(row.querySelector('.itemLevel')?.textContent?.match(/\d+/)?.[0])
-    const sockets = row.querySelectorAll('.sockets .socket').length
+    const { level, sockets, bodyArmour, parent: frame } = readSocketDetails(row)
     const threshold = [
         { max: 2, level: 1 },
         { max: 3, level: 24 },
         { max: 4, level: 34 },
         { max: 5, level: 49 },
     ].find((value) => level <= value.level)
-    const frame = row.querySelector('.itemRendered')
-    if (
-        !level ||
-        !sockets ||
-        !threshold ||
-        threshold.max <= sockets ||
-        !/\/BodyArmours\//.test(row.querySelector<HTMLImageElement>('.icon img')?.src ?? '') ||
-        !frame
-    )
+    if (!level || !sockets || !threshold || threshold.max <= sockets || !bodyArmour || !frame)
         return
     const warning = document.createElement('div')
     warning.className = 'bt-maximum-sockets'

@@ -1,31 +1,28 @@
+import { browser } from 'wxt/browser'
+import { readListingPrice } from '../../../integrations/poe-trade/results'
 import type { AddNode } from './types'
-
-const slugify = (value: string) => value.trim().toLowerCase().replace(/\s+/g, '-')
 
 export function addEquivalentPrices(
     row: HTMLElement,
     ratios: Record<string, number>,
-    add: AddNode
+    add: AddNode,
+    version: '1' | '2' = '1'
 ) {
-    const price = row.querySelector('.price')
-    const amount = parseFloat(
-        row.querySelector('[data-field="price"] > br + span')?.textContent ?? ''
-    )
-    const currency = slugify(
-        row.querySelector('[data-field="price"] .currency-text span')?.textContent ?? ''
-    )
+    const { parent: price, amount, currency, icon: originalIcon } = readListingPrice(row)
     if (!price || !amount) return
     const append = (text: string) => {
         const span = document.createElement('span')
         span.className = 'bt-equivalent-pricings'
-        const originalIcon = row.querySelector<HTMLImageElement>(
-            '[data-field="price"] .currency-image img'
-        )
         const currencies = new Map([
             [
                 'chaos',
                 {
-                    src: 'https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png',
+                    src:
+                        version === '2'
+                            ? browser.runtime.getURL(
+                                  '/assets/images/bookmark-folder/poe2/items/chaos.png'
+                              )
+                            : 'https://web.poecdn.com/image/Art/2DItems/Currency/CurrencyRerollRare.png',
                     alt: 'chaos',
                 },
             ],
