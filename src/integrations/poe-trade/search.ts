@@ -35,7 +35,7 @@ export function applyFilterValue(
     const range = /^(\d+(?:\.\d+)?)?(?:-(\d+(?:\.\d+)?)?)?$/.exec(value)
     const min = filter.querySelector<HTMLInputElement>('input.minmax[placeholder="min"]')
     const max = filter.querySelector<HTMLInputElement>('input.minmax[placeholder="max"]')
-    const sockets = title === 'sockets'
+    const sockets = title === 'sockets' || title === 'linkgroups'
     const colors = ['r', 'g', 'b', 'w'] as const
     const colorInputs = colors.map((color) =>
         filter.querySelector<HTMLInputElement>(`input.socket[placeholder="${color.toUpperCase()}"]`)
@@ -104,4 +104,27 @@ export function clearSearch() {
     if (!button || button.disabled) return false
     button.click()
     return true
+}
+
+export function clearNumericFilter(titles: string[]) {
+    const filter = Array.from(
+        document.querySelectorAll<HTMLElement>('.filter.filter-property')
+    ).find((filter) =>
+        titles.includes(normalizeTitle(filter.querySelector('.filter-title')?.textContent ?? ''))
+    )
+    if (!filter || filter.classList.contains('disabled')) return false
+    const min = filter.querySelector<HTMLInputElement>('input.minmax[placeholder="min"]')
+    const max = filter.querySelector<HTMLInputElement>('input.minmax[placeholder="max"]')
+    if (!min || !max) return false
+    setNumber(min, '')
+    setNumber(max, '')
+    return true
+}
+
+export async function submitSearch() {
+    await Promise.resolve()
+    const button = document.querySelector<HTMLButtonElement>('button.search-btn')
+    if (!button || button.disabled) return ['The Search button is unavailable.']
+    button.click()
+    return []
 }

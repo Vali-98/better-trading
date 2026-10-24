@@ -34,6 +34,7 @@ Enable **Search filter shortcuts** in Settings. Type a shortcut in the item sear
 <tr><td>Ward</td><td><code>ward</code></td><td><code>ward;40</code>, <code>ward;30-90</code>, <code>ward;-90</code></td></tr>
 <tr><td>Block</td><td><code>block</code></td><td><code>block;40</code>, <code>block;30-90</code>, <code>block;-90</code></td></tr>
 <tr><td>Base Percentile</td><td><code>bp</code>, <code>basepercentile</code>, <code>basedefencepercentile</code></td><td><code>bp;40</code>, <code>bp;30-90</code>, <code>bp;-90</code></td></tr>
+<tr><td>Link Groups</td><td><code>link</code>, <code>links</code>, <code>linkgroups</code></td><td><code>link;40</code>, <code>link;30-90</code>, <code>link;-90</code></td></tr>
 <tr><td>Sockets</td><td><code>soc</code>, <code>sockets</code></td><td><code>soc;6w</code>, <code>soc;1b2g1r</code>, <code>soc;6</code></td></tr>
 
 </tbody></table>

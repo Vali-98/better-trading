@@ -36,6 +36,7 @@ export const shortcutDefinitions = [
         keys: ['bp', 'basepercentile', 'basedefencepercentile'],
         kind: 'number',
     },
+    { title: 'Link Groups', keys: ['link', 'links', 'linkgroups'], kind: 'number' },
     { title: 'Sockets', keys: ['soc', 'sockets'], kind: 'sockets' },
 ] as const
 
