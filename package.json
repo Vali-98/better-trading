@@ -7,6 +7,7 @@
         "docs:shortcuts": "node --import tsx scripts/generate-shortcut-docs.ts",
         "check:shortcuts-docs": "node --import tsx scripts/generate-shortcut-docs.ts --check",
         "check:changelog": "tsx scripts/check-changelog.ts",
+        "release": "node --import tsx scripts/release.mjs",
         "check:release": "node scripts/check-release.mjs",
         "prebuild": "npm run check:changelog",
         "prebuild:firefox": "npm run check:changelog",

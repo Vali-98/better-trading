@@ -52,11 +52,19 @@ extension and shown in the update dialog and information panel.
 
 ## Publishing a release
 
-Create and push a matching annotated version tag after merging the release
-commit, for example `git tag -a v0.1.0 -m "v0.1.0"` then `git push origin
-v0.1.0`. The release workflow validates that the tag equals `v` plus the
-`package.json` version, validates the corresponding changelog, packages Chrome
-and Firefox archives, and publishes a GitHub release.
+First create and commit the next version's `changelogs/<version>.md`, and merge
+all changes into `master` (or `main`). Then run:
+
+```bash
+npm run release -- patch       # Or minor / major: create a local version commit and tag
+npm run release -- patch -y    # Also push the branch and tag to origin
+```
+
+The script validates the next changelog and requires a clean working tree before
+updating `package.json` and `package-lock.json`. Without `-y`, it prints the push
+command. GitHub Actions tests, packages both browsers, and publishes the release.
+Use `make upload-firefox` separately for Firefox submission. Download the Chrome
+ZIP from the GitHub release and upload it manually to the Chrome Web Store.
 
 Git hooks are installed automatically by `npm install`. A pre-commit check
 validates staged `package.json` version changes; a pre-push check validates
