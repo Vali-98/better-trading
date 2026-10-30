@@ -10,7 +10,7 @@ import { startPageController } from '../lib/pageController'
 import { startResultsController } from '../lib/resultsController'
 import { startSearchEnhancements } from '../lib/searchEnhancements'
 import { browser } from 'wxt/browser'
-import { useSettingsStore } from '../stores/settings'
+import { startSearchHistoryEnhancer } from '../lib/searchHistoryEnhancer'
 
 export default defineContentScript({
     matches: ['*://www.pathofexile.com/trade*', '*://pathofexile.com/trade*'],
@@ -18,26 +18,7 @@ export default defineContentScript({
     runAt: 'document_start',
     async main(ctx) {
         ctx.onInvalidated(startLiveSearchEnhancer())
-        const syncSearchHistory = () =>
-            window.postMessage(
-                ctx.isInvalid
-                    ? { type: 'bt-stop-search-history' }
-                    : {
-                          type: 'bt-search-history-setting',
-                          enabled: !useSettingsStore.getState().disabled.includes('search-history'),
-                      },
-                location.origin
-            )
-        const unsubscribeHistory = useSettingsStore.subscribe(syncSearchHistory)
-        ctx.onInvalidated(() => {
-            unsubscribeHistory()
-            window.postMessage({ type: 'bt-stop-search-history' }, location.origin)
-        })
-        void injectScript('/search-history.js')
-            .then(syncSearchHistory)
-            .catch(() =>
-                reportIntegrationIssue('poe-trade', 'Search history script injection failed')
-            )
+        startSearchHistoryEnhancer(ctx)
         const onItems = (event: MessageEvent) => {
             if (
                 event.source !== window ||

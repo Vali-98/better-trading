@@ -1,13 +1,6 @@
 import { currentLocation } from './location'
 
-const storageKey = 'bt-tab-search-history'
 const stateKey = '__betterTradingSearchHistory'
-const limit = 15
-
-interface Entry {
-    id: string
-    url: string
-}
 
 function searchLocation(value: string | URL) {
     try {
@@ -44,45 +37,10 @@ function entryId(state: unknown): string | undefined {
 export function installSearchHistory(enabled = true, reload = () => location.reload()) {
     const originalPush = history.pushState
     const originalReplace = history.replaceState
-    let entries: Entry[] = []
     let active = true
     let navigating = false
     let previous = searchLocation(location.href)?.url
     let previousId = entryId(history.state)
-    try {
-        const saved: unknown = JSON.parse(sessionStorage.getItem(storageKey) ?? '[]')
-        if (Array.isArray(saved))
-            entries = saved
-                .filter(
-                    (entry): entry is Entry =>
-                        entry &&
-                        typeof entry.id === 'string' &&
-                        typeof entry.url === 'string' &&
-                        searchLocation(entry.url)?.url === entry.url
-                )
-                .slice(-limit)
-    } catch {
-        // Blocked or corrupt storage must not prevent searching.
-    }
-    const save = () => {
-        try {
-            if (enabled) sessionStorage.setItem(storageKey, JSON.stringify(entries))
-            else sessionStorage.removeItem(storageKey)
-        } catch {
-            // Native history still works when session storage is unavailable.
-        }
-    }
-    const remember = (id: string, url: string, branchFrom?: Entry) => {
-        if (branchFrom) {
-            const index = entries.findIndex((entry) => entry.id === branchFrom.id)
-            entries = index < 0 ? [branchFrom] : entries.slice(0, index + 1)
-        }
-        const entry = entries.find((entry) => entry.id === id)
-        if (entry) entry.url = url
-        else entries.push({ id, url })
-        entries = entries.slice(-limit)
-        save()
-    }
     const wrap = (original: History['pushState']): History['pushState'] =>
         function (this: History, state, unused, url) {
             if (!active || !enabled || navigating || this !== history || !canTag(state))
@@ -103,20 +61,6 @@ export function installSearchHistory(enabled = true, reload = () => location.rel
             const method = changed ? originalPush : originalReplace
             // Only record a navigation after the browser accepts it (e.g. same-origin checks).
             method.call(this, { ...state, [stateKey]: id }, unused, url)
-            // Reloading or updating an evicted entry must not reorder its forward history.
-            if (
-                changed ||
-                !currentId ||
-                !entries.length ||
-                entries.some((entry) => entry.id === id)
-            )
-                remember(
-                    id,
-                    next.url,
-                    changed && current && currentId
-                        ? { id: currentId, url: current.url }
-                        : undefined
-                )
             previous = next.url
             previousId = id
         }
@@ -134,22 +78,19 @@ export function installSearchHistory(enabled = true, reload = () => location.rel
         previousId = id
         if (!wasSearch && !id) return
         // The site need not understand our entries. Reload to restore both filters and results,
-        // including entries older than our bounded cache. Never push while traversing history.
+        // without maintaining a separate URL cache. Never push while traversing history.
         navigating = true
         event.stopImmediatePropagation()
         reload()
     }
     window.addEventListener('popstate', onPopState, true)
     if (enabled) replace.call(history, history.state, '')
-    else save()
     return {
         setEnabled(value: boolean) {
             if (enabled === value) return
             enabled = value
-            entries = []
             previous = searchLocation(location.href)?.url
             if (enabled) replace.call(history, history.state, '')
-            save()
         },
         stop() {
             active = false
