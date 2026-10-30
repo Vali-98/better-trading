@@ -1,6 +1,17 @@
 import { expect, it } from 'vitest'
 import { loadReleases, isDismissed, normalizeDismissed } from '../../../src/lib/releases/model'
 const note = '# Release\n\n## Fixed\n\n- A fix.\n'
+it('accepts Windows paths passed by the local build check', () => {
+    const { current, releases } = loadReleases(
+        {
+            'C:\\project\\changelogs\\0.1.0.md': note.replace(/\n/g, '\r\n'),
+            'C:\\project\\changelogs\\legacy\\1-9-2-mercenaries-2.md': '# Old',
+        },
+        '0.1.0'
+    )
+    expect(current.id).toBe('0.1.0')
+    expect(releases[1].legacy).toBe(true)
+})
 it('requires an entry for the package version and validates titles and sections', () => {
     expect(() => loadReleases({}, '0.1.0')).toThrow('Missing changelog')
     expect(() => loadReleases({ '/0.1.0.md': 'bad' }, '0.1.0')).toThrow('Invalid release')

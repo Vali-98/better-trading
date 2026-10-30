@@ -7,6 +7,7 @@ export interface Release {
 }
 export function loadReleases(files: Record<string, string>, currentVersion: string) {
     const releases = Object.entries(files).map(([path, markdown]): Release => {
+        path = path.replace(/\\/g, '/')
         const legacy = path.includes('/legacy/')
         const id = path.split('/').pop()!.replace(/\.md$/, '')
         const version = legacy

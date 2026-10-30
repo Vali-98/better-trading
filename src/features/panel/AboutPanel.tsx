@@ -20,6 +20,7 @@ const enhancerLabels = {
 }
 
 const searchEnhancementLabels = {
+    'search-history': 'Browser back/forward search history',
     'coloured-meta-tags': 'Coloured meta tags',
     'search-filter-shortcuts': 'Search filter shortcuts',
     'focus-item-search': 'Shift + F to focus item search',

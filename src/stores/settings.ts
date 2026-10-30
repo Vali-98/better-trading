@@ -11,6 +11,7 @@ export const enhancerIds = [
 // 'maximum-sockets',
 // 'regroup-similars',
 export const searchEnhancementIds = [
+    'search-history',
     'coloured-meta-tags',
     'search-filter-shortcuts',
     'focus-item-search',

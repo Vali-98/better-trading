@@ -10,6 +10,7 @@ import { startPageController } from '../lib/pageController'
 import { startResultsController } from '../lib/resultsController'
 import { startSearchEnhancements } from '../lib/searchEnhancements'
 import { browser } from 'wxt/browser'
+import { startSearchHistoryEnhancer } from '../lib/searchHistoryEnhancer'
 
 export default defineContentScript({
     matches: ['*://www.pathofexile.com/trade*', '*://pathofexile.com/trade*'],
@@ -17,6 +18,7 @@ export default defineContentScript({
     runAt: 'document_start',
     async main(ctx) {
         ctx.onInvalidated(startLiveSearchEnhancer())
+        startSearchHistoryEnhancer(ctx)
         const onItems = (event: MessageEvent) => {
             if (
                 event.source !== window ||
