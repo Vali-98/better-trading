@@ -3,7 +3,7 @@ import { liveToolbar, placeMergeControl } from '../../integrations/poe-trade/liv
 
 interface ToolbarViewState {
     state: LiveState
-    candidates: { id: number; label: string }[]
+    candidates: { id: number; label: string; contains?: boolean }[]
     message: string
     busy: boolean
 }
@@ -58,10 +58,21 @@ export function createLiveToolbar({
                 option.textContent = tab.label
                 select.append(option)
             }
-            if (candidates.length > 1) mergeControl.append(select)
-            mergeControl.append(
-                button('Merge', () => onMerge(Number(select.value)), busy || !candidates.length)
+            const mergeButton = button(
+                'Merge',
+                () => onMerge(Number(select.value)),
+                busy || !candidates.length
             )
+            const updateLabel = () => {
+                mergeButton.textContent = candidates.find((tab) => tab.id === Number(select.value))
+                    ?.contains
+                    ? 'Go to live search'
+                    : 'Merge'
+            }
+            select.addEventListener('change', updateLabel)
+            updateLabel()
+            if (candidates.length > 1) mergeControl.append(select)
+            mergeControl.append(mergeButton)
         }
         if (state.subscriptions.length) {
             const title = document.createElement('strong')

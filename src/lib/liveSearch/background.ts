@@ -46,7 +46,14 @@ export function registerLiveSearchCoordinator() {
                             type: 'bt-live-probe',
                         })
                         if (response?.native && validUrl(response.native.url))
-                            coordinator.update(id, response.native)
+                            coordinator.update(id, {
+                                ...response.native,
+                                subscriptions: Array.isArray(response.subscriptions)
+                                    ? response.subscriptions.filter(
+                                          (key: unknown) => typeof key === 'string'
+                                      )
+                                    : [],
+                            })
                         else coordinator.remove(id)
                     } catch {
                         coordinator.remove(id)
@@ -77,7 +84,14 @@ export function registerLiveSearchCoordinator() {
                         type: 'bt-live-activate',
                     })
                     if (response?.native && parseLiveSearch(response.native.url).scope === scope) {
-                        coordinator.update(id, response.native)
+                        coordinator.update(id, {
+                            ...response.native,
+                            subscriptions: Array.isArray(response.subscriptions)
+                                ? response.subscriptions.filter(
+                                      (key: unknown) => typeof key === 'string'
+                                  )
+                                : [],
+                        })
                         return
                     }
                 } catch {

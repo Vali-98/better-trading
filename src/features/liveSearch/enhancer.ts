@@ -18,7 +18,7 @@ export function startLiveSearchEnhancer() {
     let running = false
     let disposed = false
     let state: LiveState = { subscriptions: [] }
-    let candidates: { id: number; label: string }[] = []
+    let candidates: { id: number; label: string; contains?: boolean }[] = []
     let message = ''
     let busy = false
     let style: HTMLStyleElement | undefined
@@ -60,7 +60,9 @@ export function startLiveSearchEnhancer() {
                     label: label(),
                 })
                 message = result?.ok
-                    ? 'Merged. The destination tab now receives this search.'
+                    ? result.existing
+                        ? 'Opened the tab containing this search.'
+                        : 'Merged. The destination tab now receives this search.'
                     : result?.message || 'Merge failed; the source search was kept running.'
             } catch {
                 message = 'Destination unavailable; the source search was kept running.'
@@ -70,7 +72,20 @@ export function startLiveSearchEnhancer() {
             }
         },
     })
+    const beforeUnload = (event: BeforeUnloadEvent) => {
+        event.preventDefault()
+        event.returnValue = ''
+    }
+    let warning = false
+    const updateWarning = () => {
+        const needed = running && state.subscriptions.length > 0
+        if (needed === warning) return
+        warning = needed
+        if (needed) window.addEventListener('beforeunload', beforeUnload)
+        else window.removeEventListener('beforeunload', beforeUnload)
+    }
     const render = () => {
+        updateWarning()
         if (running) toolbar.render({ state, candidates, message, busy })
     }
     const heartbeat = async () => {
@@ -136,9 +151,16 @@ export function startLiveSearchEnhancer() {
         }
         if (request?.type === 'bt-live-probe')
             return Promise.resolve({
+                subscriptions: state.subscriptions.map(({ key }) => key),
                 native: state.native ? { url: state.native.url, label: label() } : undefined,
             })
         if (request?.type === 'bt-live-add' && typeof request.url === 'string') {
+            const key = parseLiveSearch(request.url).key
+            if (
+                state.native &&
+                (state.native.key === key || state.subscriptions.some((item) => item.key === key))
+            )
+                return Promise.resolve({ ok: true, existing: true })
             if (!state.native)
                 return Promise.resolve({
                     ok: false,
@@ -168,6 +190,7 @@ export function startLiveSearchEnhancer() {
         generation++
         if (!running) return
         running = false
+        updateWarning()
         window.postMessage({ type: 'bt-live-stop' }, location.origin)
         if (timer) clearInterval(timer)
         stopPageUpdates?.()

@@ -4,6 +4,7 @@ import type { LiveSearch } from '../../models/liveSearch'
 interface TabInfo {
     id: number
     search: LiveSearch
+    subscriptions: string[]
     updated: number
 }
 interface Transport {
@@ -19,13 +20,18 @@ export function createLiveCoordinator(transport: Transport) {
         remove(id: number) {
             tabs.delete(id)
         },
-        update(id: number, value?: { url: string; label?: string }) {
+        update(id: number, value?: { url: string; label?: string; subscriptions?: string[] }) {
             if (!value) {
                 tabs.delete(id)
                 return
             }
             const search = parseLiveSearch(value.url, value.label)
-            tabs.set(id, { id, search, updated: Date.now() })
+            tabs.set(id, {
+                id,
+                search,
+                subscriptions: value.subscriptions ?? [],
+                updated: Date.now(),
+            })
         },
         targets() {
             return [...tabs.values()]
@@ -37,7 +43,13 @@ export function createLiveCoordinator(transport: Transport) {
             for (const [key, tab] of tabs) if (Date.now() - tab.updated > 20_000) tabs.delete(key)
             return [...tabs.values()]
                 .filter((tab) => tab.id !== id && tab.search.scope === current.scope)
-                .map((tab) => ({ id: tab.id, label: tab.search.label }))
+                .map((tab) => ({
+                    id: tab.id,
+                    label: tab.search.label,
+                    ...(tab.search.key === current.key || tab.subscriptions.includes(current.key)
+                        ? { contains: true }
+                        : {}),
+                }))
         },
         async merge(sourceId: number, targetId: number, url: string, label: string) {
             if (sourceId === targetId || merging.has(sourceId))
@@ -56,13 +68,14 @@ export function createLiveCoordinator(transport: Transport) {
                     type: 'bt-live-add',
                     url: search.url,
                     label: search.label,
-                })) as { ok?: boolean; message?: string } | undefined
+                })) as { ok?: boolean; message?: string; existing?: boolean } | undefined
                 if (!response?.ok)
                     throw new Error(response?.message || 'The destination could not connect.')
                 // Never stop the source until the destination confirms authentication.
-                await transport.send(sourceId, { type: 'bt-live-handoff', url: search.url })
+                if (!response.existing)
+                    await transport.send(sourceId, { type: 'bt-live-handoff', url: search.url })
                 await transport.focus(targetId)
-                return { ok: true }
+                return { ok: true, existing: response.existing === true }
             } finally {
                 merging.delete(sourceId)
             }

@@ -54,3 +54,17 @@ it('keeps the source running when the destination fails or is incompatible', asy
     )
     expect(send).toHaveBeenCalledTimes(1)
 })
+it('marks existing membership and focuses the host without adding or handing off again', async () => {
+    const send = vi.fn().mockResolvedValue({ ok: true, existing: true })
+    const focus = vi.fn()
+    const manager = createLiveCoordinator({ send, focus })
+    manager.update(2, { url: url('League', 'two'), subscriptions: ['one'] })
+    expect(manager.candidates(1, url('League', 'one'))).toEqual([
+        { id: 2, label: 'Live search', contains: true },
+    ])
+    await manager.merge(1, 2, url('League', 'one'), 'First')
+    expect(send).toHaveBeenCalledTimes(1)
+    expect(focus).toHaveBeenCalledWith(2)
+    manager.update(2, { url: url('League', 'two'), subscriptions: [] })
+    expect(manager.candidates(1, url('League', 'one'))).toEqual([{ id: 2, label: 'Live search' }])
+})

@@ -9,14 +9,15 @@ export function startPageController(client: QueryClient) {
     let previous = ''
     let stopped = false
     let title = ''
-    const baseTitle = document.title.replace(/^\(\d+\) /, '')
+    const baseTitle = document.title.replace(/^\(\d+\) /, '').replace(/^⚡\s*/, '')
     let running = false
     let pending = false
     let titleTimer: ReturnType<typeof setTimeout> | undefined
     const writeTitle = () => {
         if (stopped || !title) return
         const count = document.title.match(/^\(\d+\) /)?.[0] ?? ''
-        if (document.title !== count + title) document.title = count + title
+        const marker = /\/live\/?$/.test(location.pathname) ? '⚡ ' : ''
+        if (document.title !== count + marker + title) document.title = count + marker + title
     }
     async function update() {
         if (stopped || !document.hasFocus()) return
