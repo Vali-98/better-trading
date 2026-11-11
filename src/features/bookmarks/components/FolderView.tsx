@@ -12,6 +12,7 @@ import { useFolderTrades } from '../hooks/useFolderTrades'
 import { FolderHeader } from './FolderHeader'
 import { TradeEditorDialog } from './TradeEditorDialog'
 import { TradeList } from './TradeList'
+import { BulkTradeEditorDialog } from './BulkTradeEditorDialog'
 
 type Props = {
     folder: Folder
@@ -28,6 +29,7 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
     const [deleting, setDeleting] = useState<Trade | null>(null)
     const [exported, setExported] = useState<string | null>(null)
     const [error, setError] = useState('')
+    const [bulkEditing, setBulkEditing] = useState(false)
     const { client, queryKey, trades, mutation, reorderMutation } = useFolderTrades(folder.id)
     const items = trades.data ?? []
     const save = (next: Trade[], onSuccess?: () => void) => mutation.mutate(next, { onSuccess })
@@ -57,6 +59,7 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
                 expanded={expanded}
                 onToggle={onToggle}
                 onEdit={onEdit}
+                onBulkEdit={() => setBulkEditing(true)}
                 onArchive={onArchive}
                 onDelete={() => setDeleteFolder(true)}
                 onExport={() => setExported(serialize(folder, items))}
@@ -137,6 +140,15 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
                     )}
                 </div>
             </Collapsible>
+            {bulkEditing && (
+                <BulkTradeEditorDialog
+                    trades={items}
+                    saving={mutation.isPending}
+                    error={mutation.error ? 'Unable to save changes.' : ''}
+                    onApply={(next) => save(next)}
+                    onClose={() => setBulkEditing(false)}
+                />
+            )}
             {exported && (
                 <Dialog title="Export folder" close={() => setExported(null)}>
                     <textarea

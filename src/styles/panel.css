@@ -1,4 +1,24 @@
 @import 'tailwindcss';
+
+.bt-dialog .bt-bulk-edit-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    margin-top: 15px;
+}
+.bt-dialog .bt-bulk-edit-row label,
+.bt-dialog .bt-bulk-edit-row input {
+    margin: 0;
+}
+@media (max-width: 480px) {
+    .bt-dialog .bt-bulk-edit-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .bt-dialog .bt-bulk-edit-row label {
+        grid-column: 1 / -1;
+    }
+}
 @import './trends.css';
 @import './tags.css';
 

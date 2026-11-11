@@ -9,6 +9,7 @@ export function FolderHeader({
     expanded,
     onToggle,
     onEdit,
+    onBulkEdit,
     onArchive,
     onDelete,
     onExport,
@@ -19,6 +20,7 @@ export function FolderHeader({
     expanded: boolean
     onToggle: () => void
     onEdit: () => void
+    onBulkEdit: () => void
     onArchive: () => void
     onDelete: () => void
     onExport: () => void
@@ -46,6 +48,9 @@ export function FolderHeader({
                 </summary>
                 <div>
                     {!folder.archivedAt && <button onClick={onEdit}>Edit folder</button>}
+                    <button disabled={!canExport} onClick={onBulkEdit}>
+                        Bulk edit
+                    </button>
                     {liveAction}
                     <button onClick={onArchive}>
                         {folder.archivedAt ? 'Restore folder' : 'Archive folder'}
