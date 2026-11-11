@@ -1,4 +1,4 @@
-import { safeTradeUrl } from '../integrations/poe-trade/navigation'
+import { tradeUrl } from '../integrations/poe-trade/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getHistory } from '../lib/history'
 import { setValue } from '../lib/storage'
@@ -24,7 +24,7 @@ export function HistoryPanel() {
                     <ul>
                         {history.data.map((entry) => (
                             <li key={entry.id}>
-                                <a className="bt-history-link" href={safeTradeUrl(entry)}>
+                                <a className="bt-history-link" href={tradeUrl(entry)}>
                                     {entry.title || entry.slug}
                                     <small>
                                         {entry.league} ·{' '}

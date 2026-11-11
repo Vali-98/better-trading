@@ -36,12 +36,6 @@ export function TradeList({
                             </span>
                         )}
                         {trade.title}
-                        {!bookmarkUrl(trade) && (
-                            <small className="bt-invalid-link">
-                                {' '}
-                                — Link unavailable; use Edit trade to repair it
-                            </small>
-                        )}
                     </a>
                     <details className="bt-menu">
                         <summary aria-label={'Actions for ' + trade.title}>

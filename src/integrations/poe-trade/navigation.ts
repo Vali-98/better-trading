@@ -2,57 +2,17 @@ import { buildTradeUrl, type TradeDestination } from './urls'
 import { currentLocation } from './location'
 import { decodeSearchQuery, encodeSearchQuery } from './encodedQuery'
 import { selectedLeagueOverride } from './selectedLeagueState'
-import { reportIntegrationIssue } from '../diagnostics'
 
-export function tradeUrl(
-    destination: TradeDestination,
-    options: { live?: boolean; origin?: string } = {}
-) {
-    return buildTradeUrl(
-        {
-            ...destination,
-            league: selectedLeagueOverride(destination.version) ?? destination.league,
-        },
-        options
-    )
+export function tradeUrl(destination: TradeDestination, options: { live?: boolean; origin?: string } = {}) {
+    return buildTradeUrl({ ...destination, league: selectedLeagueOverride(destination.version) ?? destination.league }, options)
 }
 export function bookmarkUrl(
-    trade: {
-        location: Pick<TradeDestination, 'version' | 'type' | 'slug'> & {
-            league?: string
-            live?: boolean
-        }
-    },
+    trade: { location: Pick<TradeDestination, 'version' | 'type' | 'slug'> & { league?: string; live?: boolean } },
     options: { live?: boolean; league?: string } = {}
 ) {
-    try {
-        const league = options.league ?? trade.location.league ?? currentLocation().league
-        if (!league) return undefined
-        return safeTradeUrl(
-            { ...trade.location, league },
-            { ...options, live: options.live ?? trade.location.live }
-        )
-    } catch {
-        reportIntegrationIssue('poe-trade', 'A bookmark link could not be generated')
-        return undefined
-    }
-}
-// Rendering must never promote a malformed link into a failure of the panel.
-// Keep buildTradeUrl strict for editor validation and actual navigation actions.
-export function safeTradeUrl(
-    destination: TradeDestination,
-    options: { live?: boolean; origin?: string } = {}
-) {
-    try {
-        return tradeUrl(destination, options)
-    } catch {
-        try {
-            return buildTradeUrl(destination, options)
-        } catch {
-            reportIntegrationIssue('poe-trade', 'A trade link could not be generated')
-            return undefined
-        }
-    }
+    const league = selectedLeagueOverride(trade.location.version) ?? options.league ?? trade.location.league ?? currentLocation().league
+    if (!league) return undefined
+    return buildTradeUrl({ ...trade.location, league }, { ...options, live: options.live ?? trade.location.live })
 }
 export function liveSearchUrl(value: string) {
     const url = new URL(value)
