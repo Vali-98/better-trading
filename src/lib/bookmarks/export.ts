@@ -1,5 +1,4 @@
 import { getFolders, getTrades, saveFolders, saveTrades, type Folder, type Trade } from './storage'
-import { buildTradeUrl } from '../../integrations/poe-trade/urls'
 
 export function serialize(folder: Folder, trades: Trade[]) {
     const json = JSON.stringify({
@@ -9,25 +8,16 @@ export function serialize(folder: Folder, trades: Trade[]) {
         trs: trades.map((trade) => ({
             tit: trade.title,
             loc: `${trade.location.version}:${trade.location.type}:${trade.location.slug}`,
-            ...(trade.location.league ? { league: trade.location.league } : {}),
-            ...(trade.location.live ? { live: true } : {}),
         })),
     })
-    const version = trades.some((trade) => trade.location.league || trade.location.live) ? 4 : 3
-    return `${version}:${btoa(Array.from(new TextEncoder().encode(json), (byte) => String.fromCharCode(byte)).join(''))}`
+    return `3:${btoa(Array.from(new TextEncoder().encode(json), (byte) => String.fromCharCode(byte)).join(''))}`
 }
 
 export function deserialize(value: string): {
     folder: Folder
     trades: Trade[]
 } {
-    const version = value.startsWith('4:')
-        ? 4
-        : value.startsWith('3:')
-          ? 3
-          : value.startsWith('2:')
-            ? 2
-            : 1
+    const version = value.startsWith('3:') ? 3 : value.startsWith('2:') ? 2 : 1
     const binary = atob(version > 1 ? value.slice(2) : value)
     const data = JSON.parse(
         version > 1
@@ -39,54 +29,31 @@ export function deserialize(value: string): {
     if (
         typeof data.tit !== 'string' ||
         !Array.isArray(data.trs) ||
-        (version >= 3 && !['1', '2'].includes(data.ver))
+        (version === 3 && !['1', '2'].includes(data.ver))
     )
         throw new Error('Invalid folder export')
     const folder: Folder = {
         id: crypto.randomUUID(),
         title: data.tit,
         icon: typeof data.icn === 'string' ? data.icn : null,
-        version: version >= 3 ? data.ver : '1',
+        version: version === 3 ? data.ver : '1',
         archivedAt: null,
     }
-    const trades: Trade[] = data.trs.map(
-        (entry: { tit: string; loc: string; league?: string; live?: boolean }) => {
-            if (typeof entry.tit !== 'string' || typeof entry.loc !== 'string')
-                throw new Error('Invalid bookmark')
-            const parts = entry.loc.split(':')
-            if (parts.length === 2 && version < 3) parts.unshift('1')
-            const [game, type, slug] = parts
-            if (!['1', '2'].includes(game) || !type || !slug || parts.length !== 3)
-                throw new Error('Invalid bookmark location')
-            if (
-                entry.league !== undefined &&
-                (typeof entry.league !== 'string' || !entry.league.trim())
-            )
-                throw new Error('Invalid bookmark league')
-            if (
-                entry.live !== undefined &&
-                (typeof entry.live !== 'boolean' || (entry.live && type !== 'search'))
-            )
-                throw new Error('Invalid live search bookmark')
-            if (entry.league)
-                buildTradeUrl(
-                    { version: game as '1' | '2', type, slug, league: entry.league },
-                    { live: entry.live }
-                )
-            return {
-                id: crypto.randomUUID(),
-                title: entry.tit,
-                completedAt: null,
-                location: {
-                    version: game as '1' | '2',
-                    type,
-                    slug,
-                    ...(entry.league ? { league: entry.league } : {}),
-                    ...(entry.live ? { live: true } : {}),
-                },
-            }
+    const trades: Trade[] = data.trs.map((entry: { tit: string; loc: string }) => {
+        if (typeof entry.tit !== 'string' || typeof entry.loc !== 'string')
+            throw new Error('Invalid bookmark')
+        const parts = entry.loc.split(':')
+        if (parts.length === 2 && version < 3) parts.unshift('1')
+        const [game, type, slug] = parts
+        if (!['1', '2'].includes(game) || !type || !slug || parts.length !== 3)
+            throw new Error('Invalid bookmark location')
+        return {
+            id: crypto.randomUUID(),
+            title: entry.tit,
+            completedAt: null,
+            location: { version: game as '1' | '2', type, slug },
         }
-    )
+    })
     return { folder, trades }
 }
 

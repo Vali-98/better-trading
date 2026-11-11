@@ -5,7 +5,7 @@ export interface Trade {
     id: string
     title: string
     completedAt: string | null
-    location: { version: '1' | '2'; type: string; slug: string; league?: string; live?: boolean }
+    location: { version: '1' | '2'; type: string; slug: string }
 }
 export interface Folder {
     id: string

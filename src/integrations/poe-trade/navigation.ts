@@ -4,12 +4,12 @@ import { decodeSearchQuery, encodeSearchQuery } from './encodedQuery'
 
 export { buildTradeUrl as tradeUrl }
 export function bookmarkUrl(
-    trade: { location: Pick<TradeDestination, 'version' | 'type' | 'slug'> & { league?: string; live?: boolean } },
+    trade: { location: Pick<TradeDestination, 'version' | 'type' | 'slug'> },
     options: { live?: boolean; league?: string } = {}
 ) {
-    const league = options.league ?? trade.location.league ?? currentLocation().league
+    const league = options.league ?? currentLocation().league
     if (!league) return undefined
-    return buildTradeUrl({ ...trade.location, league }, { ...options, live: options.live ?? trade.location.live })
+    return buildTradeUrl({ ...trade.location, league }, options)
 }
 export function liveSearchUrl(value: string) {
     const url = new URL(value)

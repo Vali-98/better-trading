@@ -34,7 +34,7 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
     const update = (trade: Trade, change: Partial<Trade>) =>
         save(items.map((item) => (item.id === trade.id ? { ...item, ...change } : item)))
     const updateLocation = (trade: Trade) => {
-        const location = { ...currentLocation(), live: window.location.pathname.endsWith('/live') }
+        const { league: _, ...location } = currentLocation()
         if (location.slug) update(trade, { location })
     }
     const moveUp = (trade: Trade) => {
@@ -46,7 +46,7 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
         }
     }
     const register = () => {
-        const location = { ...currentLocation(), live: window.location.pathname.endsWith('/live') }
+        const { league: _, ...location } = currentLocation()
         if (!location.slug) return setError('Run a trade search before registering it.')
         setDraft({ id: crypto.randomUUID(), title: recommendTitle(), location, completedAt: null })
     }
@@ -107,13 +107,11 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
                             trade={draft}
                             saving={mutation.isPending}
                             onChange={setDraft}
-                            onSave={(edited) =>
+                            onSave={() =>
                                 save(
                                     items.some((item) => item.id === draft.id)
-                                        ? items.map((item) =>
-                                              item.id === draft.id ? edited : item
-                                          )
-                                        : [...items, edited],
+                                        ? items.map((item) => (item.id === draft.id ? draft : item))
+                                        : [...items, draft],
                                     () => setDraft(null)
                                 )
                             }
