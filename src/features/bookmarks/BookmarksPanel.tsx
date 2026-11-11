@@ -1,3 +1,4 @@
+import { FeatureBoundary } from '../../components/FeatureBoundary'
 import { useLiveSearchTargets } from '../liveSearch/useLiveSearchTargets'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -87,24 +88,26 @@ export function BookmarksPanel() {
                     }}>
                     {visibleFolders.map((folder) => (
                         <SortableItem id={folder.id} key={folder.id} className="bt-folder-wrapper">
-                            <FolderView
-                                folder={folder}
-                                expanded={expanded.includes(folder.id)}
-                                onToggle={() => toggle(folder.id)}
-                                onEdit={() => setEditing({ ...folder })}
-                                onArchive={() =>
-                                    mutation.mutate([
-                                        ...allFolders.filter((item) => item.id !== folder.id),
-                                        {
-                                            ...folder,
-                                            archivedAt: folder.archivedAt
-                                                ? null
-                                                : new Date().toISOString(),
-                                        },
-                                    ])
-                                }
-                                onRemove={() => removeMutation.mutateAsync(folder.id)}
-                            />
+                            <FeatureBoundary name="Bookmark folder">
+                                <FolderView
+                                    folder={folder}
+                                    expanded={expanded.includes(folder.id)}
+                                    onToggle={() => toggle(folder.id)}
+                                    onEdit={() => setEditing({ ...folder })}
+                                    onArchive={() =>
+                                        mutation.mutate([
+                                            ...allFolders.filter((item) => item.id !== folder.id),
+                                            {
+                                                ...folder,
+                                                archivedAt: folder.archivedAt
+                                                    ? null
+                                                    : new Date().toISOString(),
+                                            },
+                                        ])
+                                    }
+                                    onRemove={() => removeMutation.mutateAsync(folder.id)}
+                                />
+                            </FeatureBoundary>
                         </SortableItem>
                     ))}
                 </SortableList>

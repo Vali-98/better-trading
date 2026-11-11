@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from 'vitest'
+import * as searchPanel from '../../../src/integrations/poe-trade/searchPanel'
 import { subscribePageUpdates } from '../../../src/lib/page/updates'
 const stops: (() => void)[] = []
 afterEach(() => {
@@ -43,4 +44,18 @@ it('detects stat input changes but ignores extension highlight class changes', a
     document.querySelector('.item-mod')!.classList.add('bt-highlight-stat-filters')
     await vi.advanceTimersByTimeAsync(10)
     expect(listener).toHaveBeenCalledTimes(2)
+})
+
+it('continues delivering updates when a DOM parser fails and recovers on the next update', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const parser = vi.spyOn(searchPanel, 'recommendTitle').mockImplementation(() => {
+        throw new Error('Changed host DOM')
+    })
+    const listener = vi.fn()
+    stops.push(subscribePageUpdates(listener))
+    expect(listener.mock.lastCall?.[0].context.title).toBe('')
+    parser.mockReturnValue('Recovered')
+    await vi.advanceTimersByTimeAsync(510)
+    expect(listener.mock.lastCall?.[0].context.title).toBe('Recovered')
 })

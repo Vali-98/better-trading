@@ -1,3 +1,4 @@
+import { preferences } from '../lib/preferences'
 import { create } from 'zustand'
 
 export const enhancerIds = [
@@ -22,14 +23,14 @@ export const searchEnhancementIds = [
 
 // Preserve opt-in defaults when introducing settings to existing installations.
 function initializeOptIn(flag: string, feature: string) {
-    if (localStorage.getItem(flag)) return
-    const saved = localStorage.getItem('bt-disabled-settings')
+    if (preferences.getItem(flag)) return
+    const saved = preferences.getItem('bt-disabled-settings')
     if (saved !== null)
-        localStorage.setItem(
+        preferences.setItem(
             'bt-disabled-settings',
             [...new Set([...saved.split(',').filter(Boolean), feature])].join(',')
         )
-    localStorage.setItem(flag, 'true')
+    preferences.setItem(flag, 'true')
 }
 
 initializeOptIn('bt-unique-sparklines-initialized', 'unique-price-sparklines')
@@ -42,16 +43,16 @@ export const useSettingsStore = create<{
     disabled: string[]
     toggle: (id: string) => void
 }>((set) => ({
-    disabled: localStorage.getItem('bt-disabled-settings')?.split(',').filter(Boolean) ?? [
+    disabled: preferences.getItem('bt-disabled-settings')?.split(',').filter(Boolean) ?? [
         ...new Set([
-            ...(localStorage.getItem('bt-disabled-enhancers') ?? '').split(',').filter(Boolean),
+            ...(preferences.getItem('bt-disabled-enhancers') ?? '').split(',').filter(Boolean),
             'unique-price-sparklines',
             'merged-live-searches',
             'maximum-sockets',
             'regroup-similars',
             'default-search-filter-tilde',
             ...(
-                localStorage.getItem('bt-disabled-search-enhancements') ??
+                preferences.getItem('bt-disabled-search-enhancements') ??
                 'default-stat-filter-tilde'
             )
                 .split(',')
@@ -63,7 +64,7 @@ export const useSettingsStore = create<{
             const disabled = state.disabled.includes(id)
                 ? state.disabled.filter((value) => value !== id)
                 : [...state.disabled, id]
-            localStorage.setItem('bt-disabled-settings', disabled.join(','))
+            preferences.setItem('bt-disabled-settings', disabled.join(','))
             return { disabled }
         }),
 }))

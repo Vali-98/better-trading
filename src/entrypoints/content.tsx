@@ -1,3 +1,4 @@
+import { startFeature } from '../lib/startFeature'
 import { startLiveSearchEnhancer } from '../features/liveSearch/enhancer'
 import { reportIntegrationIssue } from '../integrations/diagnostics'
 import { decodeResultItems } from '../integrations/poe-trade/decode'
@@ -17,8 +18,12 @@ export default defineContentScript({
     cssInjectionMode: 'ui',
     runAt: 'document_start',
     async main(ctx) {
-        ctx.onInvalidated(startLiveSearchEnhancer())
-        startSearchHistoryEnhancer(ctx)
+        ctx.onInvalidated(startFeature('Live search', startLiveSearchEnhancer))
+        ctx.onInvalidated(
+            startFeature('Search history', () => {
+                startSearchHistoryEnhancer(ctx)
+            })
+        )
         const onItems = (event: MessageEvent) => {
             if (
                 event.source !== window ||
@@ -60,10 +65,10 @@ export default defineContentScript({
         }
         browser.storage.onChanged.addListener(onStorage)
         ctx.onInvalidated(() => browser.storage.onChanged.removeListener(onStorage))
-        const stopPage = startPageController(queryClient)
+        const stopPage = startFeature('Page controller', () => startPageController(queryClient))
         ctx.onInvalidated(stopPage)
-        ctx.onInvalidated(startResultsController(queryClient))
-        ctx.onInvalidated(startSearchEnhancements())
+        ctx.onInvalidated(startFeature('Results', () => startResultsController(queryClient)))
+        ctx.onInvalidated(startFeature('Search enhancements', startSearchEnhancements))
         const ui = await createShadowRootUi(ctx, {
             name: 'better-trading',
             position: 'inline',

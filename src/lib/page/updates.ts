@@ -21,13 +21,21 @@ let context: PageContext | undefined
 let stop: (() => void) | undefined
 let flush: (() => void) | undefined
 
+function readField<T>(name: string, read: () => T, fallback: T): T {
+    try {
+        return read()
+    } catch {
+        reportIntegrationIssue('poe-trade', `${name} unavailable`)
+        return fallback
+    }
+}
 function readContext(): PageContext {
     return {
         pathname: location.pathname,
         location: currentLocation(),
-        itemText: itemSearchText(),
-        title: recommendTitle(),
-        statsKey: statFilterState(),
+        itemText: readField('Search text', itemSearchText, ''),
+        title: readField('Search title', recommendTitle, ''),
+        statsKey: readField('Stat filters', statFilterState, ''),
     }
 }
 function deliver(listener: Listener, update: PageUpdate, name: string) {

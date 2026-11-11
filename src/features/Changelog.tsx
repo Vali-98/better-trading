@@ -1,3 +1,4 @@
+import { preferences } from '../lib/preferences'
 import { useState } from 'react'
 import { ReleaseNotes } from '../components/ReleaseNotes'
 import { Dialog } from '../components/Dialog'
@@ -6,11 +7,11 @@ import { isDismissed, normalizeDismissed } from '../lib/releases/model'
 
 export function Changelog() {
     const [dismissed, setDismissed] = useState(() => {
-        const value = localStorage.getItem('bt-dismissed-changelog')
+        const value = preferences.getItem('bt-dismissed-changelog')
         const dismissed = isDismissed(value, currentRelease, releases)
         const normalized = normalizeDismissed(value, releases)
         if (normalized && normalized !== value)
-            localStorage.setItem('bt-dismissed-changelog', normalized)
+            preferences.setItem('bt-dismissed-changelog', normalized)
         return dismissed
     })
     const [open, setOpen] = useState(false)
@@ -29,7 +30,7 @@ export function Changelog() {
                     <button
                         className="bt-button"
                         onClick={() => {
-                            localStorage.setItem('bt-dismissed-changelog', currentRelease.version)
+                            preferences.setItem('bt-dismissed-changelog', currentRelease.version)
                             setDismissed(true)
                         }}>
                         Dismiss

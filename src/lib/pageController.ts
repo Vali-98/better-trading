@@ -1,3 +1,4 @@
+import { reportIntegrationIssue } from '../integrations/diagnostics'
 import { subscribePageUpdates } from './page/updates'
 import type { QueryClient } from '@tanstack/react-query'
 import { currentLocation } from '../integrations/poe-trade/location'
@@ -30,18 +31,32 @@ export function startPageController(client: QueryClient) {
             if (previous !== location.pathname) {
                 previous = location.pathname
                 void client.invalidateQueries({ queryKey: ['bookmarks'] })
-                if (await recordCurrentSearch())
-                    void client.invalidateQueries({ queryKey: ['history'] })
+                try {
+                    if (await recordCurrentSearch())
+                        void client.invalidateQueries({ queryKey: ['history'] })
+                } catch {
+                    reportIntegrationIssue('history', 'Recording search failed')
+                }
             }
             const context = currentLocation()
             const matches = (
                 await Promise.all(
-                    (await getFolders())
+                    (
+                        await getFolders().catch(() => {
+                            reportIntegrationIssue('bookmarks', 'Title folder lookup failed')
+                            return []
+                        })
+                    )
                         .sort(
                             (a, b) => Number(Boolean(a.archivedAt)) - Number(Boolean(b.archivedAt))
                         )
                         .map(async (folder) =>
-                            (await getTrades(folder.id))
+                            (
+                                await getTrades(folder.id).catch(() => {
+                                    reportIntegrationIssue('bookmarks', 'Title trade lookup failed')
+                                    return []
+                                })
+                            )
                                 .filter(
                                     (trade) =>
                                         trade.location.version === context.version &&
@@ -53,8 +68,10 @@ export function startPageController(client: QueryClient) {
                 )
             ).flat()
             const segment = matches[0]?.title || (context.type === 'search' ? recommendTitle() : '')
-            title = (segment ? segment + ' - ' : '') + baseTitle
-            writeTitle()
+            if (!stopped) {
+                title = (segment ? segment + ' - ' : '') + baseTitle
+                writeTitle()
+            }
         } finally {
             running = false
             if (pending && !stopped) {

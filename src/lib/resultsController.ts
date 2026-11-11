@@ -1,3 +1,4 @@
+import { reportIntegrationIssue } from '../integrations/diagnostics'
 import { subscribePageUpdates } from './page/updates'
 import { installEnhancer, disposeEnhancer } from './results/enhancers/isolation'
 import { enhanceCopyItem } from '../integrations/poe-trade/copyItem'
@@ -150,6 +151,8 @@ export function startResultsController(client: QueryClient) {
                         regroupSimilarRows(row, similarGroup, cleanups)
                     )
             }
+        } catch {
+            reportIntegrationIssue('enhancers', 'Result processing failed')
         } finally {
             running = false
             if (pending) {
