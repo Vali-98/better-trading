@@ -9,6 +9,7 @@ import { PanelHeader } from '../features/panel/PanelHeader'
 import { PanelNavigation } from '../features/panel/PanelNavigation'
 import { PinnedPanel } from '../features/PinnedPanel'
 import { usePanelStore } from '../stores/panel'
+import { FeatureBoundary } from '../components/FeatureBoundary'
 
 export function ContentApp() {
     const { page, collapsed, setPage, toggleCollapsed } = usePanelStore()
@@ -34,7 +35,9 @@ export function ContentApp() {
                 />
                 {!collapsed && (
                     <>
-                        <Changelog />
+                        <FeatureBoundary name="Changelog">
+                            <Changelog />
+                        </FeatureBoundary>
                         {!about && (
                             <PanelNavigation
                                 page={page}
@@ -44,7 +47,9 @@ export function ContentApp() {
                                 }}
                             />
                         )}
-                        {about ? <AboutPanel /> : <CurrentPanel page={page} />}
+                        <FeatureBoundary key={about ? 'about' : page} name={about ? 'About' : page}>
+                            {about ? <AboutPanel /> : <CurrentPanel page={page} />}
+                        </FeatureBoundary>
                     </>
                 )}
                 <FlashMessages />
@@ -58,9 +63,13 @@ function CurrentPanel({ page }: { page: ReturnType<typeof usePanelStore.getState
         return (
             <div className="bt-bookmarks-body">
                 <div className="bt-bookmarks-scroll">
-                    <BookmarksPanel />
+                    <FeatureBoundary name="Bookmarks">
+                        <BookmarksPanel />
+                    </FeatureBoundary>
                 </div>
-                <ItemTrends />
+                <FeatureBoundary name="Item trends">
+                    <ItemTrends />
+                </FeatureBoundary>
             </div>
         )
     if (page === 'history') return <HistoryPanel />

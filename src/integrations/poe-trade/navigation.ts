@@ -1,15 +1,32 @@
 import { buildTradeUrl, type TradeDestination } from './urls'
 import { currentLocation } from './location'
 import { decodeSearchQuery, encodeSearchQuery } from './encodedQuery'
+import { reportIntegrationIssue } from '../diagnostics'
 
 export { buildTradeUrl as tradeUrl }
 export function bookmarkUrl(
     trade: { location: Pick<TradeDestination, 'version' | 'type' | 'slug'> },
     options: { live?: boolean; league?: string } = {}
 ) {
-    const league = options.league ?? currentLocation().league
-    if (!league) return undefined
-    return buildTradeUrl({ ...trade.location, league }, options)
+    try {
+        const league = options.league ?? currentLocation().league
+        if (!league) return undefined
+        return safeTradeUrl({ ...trade.location, league }, options)
+    } catch {
+        reportIntegrationIssue('poe-trade', 'A bookmark link could not be generated')
+        return undefined
+    }
+}
+export function safeTradeUrl(
+    destination: TradeDestination,
+    options: { live?: boolean; origin?: string } = {}
+) {
+    try {
+        return buildTradeUrl(destination, options)
+    } catch {
+        reportIntegrationIssue('poe-trade', 'A trade link could not be generated')
+        return undefined
+    }
 }
 export function liveSearchUrl(value: string) {
     const url = new URL(value)

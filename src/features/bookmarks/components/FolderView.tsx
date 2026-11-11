@@ -82,7 +82,7 @@ export function FolderView({ folder, expanded, onToggle, onEdit, onArchive, onRe
                             const url = bookmarkUrl(trade)
                             if (!url)
                                 return setError(
-                                    'Open a trade league before copying a bookmark URL.'
+                                    'This link is invalid or no league is available. Open a valid search and use Update trade location.'
                                 )
                             void navigator.clipboard
                                 .writeText(url)
