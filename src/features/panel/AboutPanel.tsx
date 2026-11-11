@@ -14,7 +14,6 @@ const enhancerLabels = {
     'item-reference-links': 'Wiki and PoEDB item links',
     'merged-live-searches': 'Merge Live Searches across tabs',
     'unique-price-sparklines': 'Item price trends (powered by poe.ninja)',
-    'selected-league-links': 'Use selected league for trade links',
     // Hidden and disabled by default: less useful in modern PoE.
     // 'maximum-sockets': 'Warning for armors that cannot be 6-socketed',
     // 'regroup-similars': 'Regroup similar results',

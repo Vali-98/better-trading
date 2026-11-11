@@ -2,9 +2,7 @@ import { tradeUrl } from '../integrations/poe-trade/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getHistory } from '../lib/history'
 import { setValue } from '../lib/storage'
-import { useTradeLinkRefresh } from '../integrations/poe-trade/selectedLeague'
 export function HistoryPanel() {
-    useTradeLinkRefresh()
     const client = useQueryClient()
     const history = useQuery({ queryKey: ['history'], queryFn: getHistory })
     const clear = useMutation({
