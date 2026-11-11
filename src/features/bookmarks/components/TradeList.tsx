@@ -3,6 +3,7 @@ import { BookmarkLiveAction } from '../../liveSearch/BookmarkLiveAction'
 import { DragHandle, SortableItem, SortableList } from '../../../components/Sortable'
 import { Icon } from '../../../components/Icon'
 import { type Trade } from '../../../lib/bookmarks/storage'
+import { useTradeLinkRefresh } from '../../../integrations/poe-trade/selectedLeague'
 
 export function TradeList({
     trades,
@@ -23,6 +24,7 @@ export function TradeList({
     onMoveUp: (trade: Trade) => void
     onDelete: (trade: Trade) => void
 }) {
+    useTradeLinkRefresh()
     return (
         <SortableList ids={trades.map((trade) => trade.id)} onMove={onMove}>
             {trades.map((trade) => (

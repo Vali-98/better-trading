@@ -4,6 +4,7 @@ import { browser } from 'wxt/browser'
 import { type Trade } from '../../lib/bookmarks/storage'
 import { parseLiveSearch } from '../../integrations/poe-trade/live/protocol'
 import { useLiveSearchTargets } from './useLiveSearchTargets'
+import { useTradeLinkRefresh } from '../../integrations/poe-trade/selectedLeague'
 
 export function BookmarkLiveAction({
     trades,
@@ -12,6 +13,7 @@ export function BookmarkLiveAction({
     trades: Trade[]
     folder?: boolean
 }) {
+    useTradeLinkRefresh()
     const { enabled, targets } = useLiveSearchTargets()
     const [busy, setBusy] = useState(false)
     const [message, setMessage] = useState('')

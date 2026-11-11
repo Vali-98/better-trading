@@ -11,6 +11,7 @@ import { startResultsController } from '../lib/resultsController'
 import { startSearchEnhancements } from '../lib/searchEnhancements'
 import { browser } from 'wxt/browser'
 import { startSearchHistoryEnhancer } from '../lib/searchHistoryEnhancer'
+import { startSelectedLeagueLinks } from '../integrations/poe-trade/selectedLeague'
 
 export default defineContentScript({
     matches: ['*://www.pathofexile.com/trade*', '*://pathofexile.com/trade*'],
@@ -64,6 +65,7 @@ export default defineContentScript({
         ctx.onInvalidated(stopPage)
         ctx.onInvalidated(startResultsController(queryClient))
         ctx.onInvalidated(startSearchEnhancements())
+        ctx.onInvalidated(startSelectedLeagueLinks())
         const ui = await createShadowRootUi(ctx, {
             name: 'better-trading',
             position: 'inline',
