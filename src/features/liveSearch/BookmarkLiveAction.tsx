@@ -29,6 +29,19 @@ export function BookmarkLiveAction({
     if (!enabled || (!folder && (!searches.length || !compatible.length))) return null
     const add = async (target?: number) => {
         if (busy) return
+        // A menu click can arrive before the shared DOM update has re-rendered it.
+        // Do not launch captured destinations after the selection changes.
+        if (
+            searches.some((search) => {
+                const trade = trades
+                    .filter((trade) => trade.location.type === 'search')
+                    .find((trade) => trade.location.slug === search.key)
+                return !trade || bookmarkUrl(trade) !== search.url
+            })
+        ) {
+            setMessage('The league changed. Check the selected league and try again.')
+            return
+        }
         setBusy(true)
         setMessage('Adding searches…')
         try {

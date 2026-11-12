@@ -27,7 +27,10 @@ export function TradeList({
         <SortableList ids={trades.map((trade) => trade.id)} onMove={onMove}>
             {trades.map((trade) => (
                 <SortableItem key={trade.id} id={trade.id} className="bt-trade-row">
-                    <a className="flex-1 underline" href={bookmarkUrl(trade)}>
+                    <a
+                        className="flex-1 underline"
+                        href={bookmarkUrl(trade)}
+                        aria-disabled={!bookmarkUrl(trade)}>
                         {trade.completedAt && (
                             <span className="bt-completed" aria-label="Completed">
                                 ✓{' '}
@@ -35,10 +38,7 @@ export function TradeList({
                         )}
                         {trade.title}
                         {!bookmarkUrl(trade) && (
-                            <small className="bt-invalid-link">
-                                {' '}
-                                — Link unavailable; update its location from a valid search
-                            </small>
+                            <small className="bt-invalid-link"> — Link unavailable</small>
                         )}
                     </a>
                     <details className="bt-menu">
@@ -50,10 +50,14 @@ export function TradeList({
                                 {trade.completedAt ? 'Uncomplete trade' : 'Complete trade'}
                             </button>
                             <button onClick={() => onEdit(trade)}>Edit trade</button>
-                            <button onClick={() => onCopy(trade)}>Copy trade URL</button>
+                            <button disabled={!bookmarkUrl(trade)} onClick={() => onCopy(trade)}>
+                                Copy trade URL
+                            </button>
                             {trade.location.type === 'search' && (
                                 <>
-                                    <a href={bookmarkUrl(trade, { live: true })}>
+                                    <a
+                                        aria-disabled={!bookmarkUrl(trade, { live: true })}
+                                        href={bookmarkUrl(trade, { live: true })}>
                                         Open live search
                                     </a>
                                     <BookmarkLiveAction trades={[trade]} />

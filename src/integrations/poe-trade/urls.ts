@@ -1,4 +1,5 @@
 import type { GameVersion } from '../../models/search'
+import { validLeague } from './bookmarkLeague'
 export interface TradeDestination {
     version: GameVersion
     type: string
@@ -19,8 +20,7 @@ export function buildTradeUrl(
     if (
         !['1', '2'].includes(destination.version) ||
         !['search', 'exchange'].includes(destination.type) ||
-        typeof destination.league !== 'string' ||
-        !destination.league ||
+        !validLeague(destination.league) ||
         typeof destination.slug !== 'string' ||
         !/^[A-Za-z0-9_-]+$/.test(destination.slug)
     )

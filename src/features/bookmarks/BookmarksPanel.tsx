@@ -12,8 +12,10 @@ import { reordered } from './bookmarkUtils'
 import { FolderEditorDialog } from './components/FolderEditorDialog'
 import { FolderView } from './components/FolderView'
 import { useExpandedFolders } from './hooks/useExpandedFolders'
+import { useBookmarkLeague } from './hooks/useBookmarkLeague'
 
 export function BookmarksPanel() {
+    const league = useBookmarkLeague()
     useLiveSearchTargets(true)
     const client = useQueryClient()
     const folders = useQuery({ queryKey: bookmarkQueryKeys.folders(), queryFn: getFolders })
@@ -61,6 +63,11 @@ export function BookmarksPanel() {
     }
     return (
         <section className="bt-bookmarks">
+            {league.warning && (
+                <p className="bt-league-notice" role="status">
+                    {league.warning}
+                </p>
+            )}
             <div className="bt-bookmark-toolbar">
                 <button className="bt-button" onClick={() => expand([])}>
                     <Icon name="collapse" /> Collapse all

@@ -2,6 +2,7 @@ import { buildTradeUrl, type TradeDestination } from './urls'
 import { currentLocation } from './location'
 import { decodeSearchQuery, encodeSearchQuery } from './encodedQuery'
 import { reportIntegrationIssue } from '../diagnostics'
+import { readBookmarkLeague } from './bookmarkLeague'
 
 export { buildTradeUrl as tradeUrl }
 export function bookmarkUrl(
@@ -9,7 +10,7 @@ export function bookmarkUrl(
     options: { live?: boolean; league?: string } = {}
 ) {
     try {
-        const league = options.league ?? currentLocation().league
+        const league = options.league ?? readBookmarkLeague().league
         if (!league) return undefined
         return safeTradeUrl({ ...trade.location, league }, options)
     } catch {

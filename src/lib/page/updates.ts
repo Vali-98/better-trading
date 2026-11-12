@@ -2,6 +2,10 @@ import { currentLocation } from '../../integrations/poe-trade/location'
 import { itemSearchText } from '../../integrations/poe-trade/searchInputs'
 import { recommendTitle, statFilterState } from '../../integrations/poe-trade/searchPanel'
 import { reportIntegrationIssue } from '../../integrations/diagnostics'
+import {
+    readBookmarkLeague,
+    type BookmarkLeague,
+} from '../../integrations/poe-trade/bookmarkLeague'
 
 export interface PageContext {
     pathname: string
@@ -9,6 +13,7 @@ export interface PageContext {
     itemText: string
     title: string
     statsKey: string
+    bookmarkLeague: BookmarkLeague
 }
 export interface PageUpdate {
     context: PageContext
@@ -36,6 +41,7 @@ function readContext(): PageContext {
         itemText: readField('Search text', itemSearchText, ''),
         title: readField('Search title', recommendTitle, ''),
         statsKey: readField('Stat filters', statFilterState, ''),
+        bookmarkLeague: readBookmarkLeague(),
     }
 }
 function deliver(listener: Listener, update: PageUpdate, name: string) {
