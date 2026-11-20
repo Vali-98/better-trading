@@ -1,4 +1,6 @@
 import { reportIntegrationIssue } from '../integrations/diagnostics'
+import { recordTradePrice } from './bookmarks/storage'
+import { bookmarkQueryKeys } from './bookmarks/queryKeys'
 import { subscribePageUpdates } from './page/updates'
 import { installEnhancer, disposeEnhancer } from './results/enhancers/isolation'
 import { enhanceCopyItem } from '../integrations/poe-trade/copyItem'
@@ -8,6 +10,7 @@ import {
     hasResultRows,
     isSearchElement,
     isModNode,
+    readListingPrice,
 } from '../integrations/poe-trade/results'
 import { useResultsStore } from '../stores/results'
 import type { QueryClient } from '@tanstack/react-query'
@@ -119,6 +122,22 @@ export function startResultsController(client: QueryClient) {
                         highlightMatchingStats(row, needles)
                 })
                 if (!cleanups.has(row)) {
+                    if (rows[0] === row && sessionStorage.getItem('bt-bookmark-trade')) {
+                        const tradeId = sessionStorage.getItem('bt-bookmark-trade')!
+                        sessionStorage.removeItem('bt-bookmark-trade')
+                        const price = readListingPrice(row)
+                        if (Number.isFinite(price.amount))
+                            void recordTradePrice(tradeId, {
+                                amount: price.amount,
+                                currency: price.currency,
+                                icon: price.icon?.src,
+                            }).then((folderId) => {
+                                if (folderId && !stopped)
+                                    client.invalidateQueries({
+                                        queryKey: bookmarkQueryKeys.trades(folderId),
+                                    })
+                            })
+                    }
                     const disposers: (() => void)[] = []
                     cleanups.set(row, disposers)
                     row.setAttribute('bt-enhanced', '')
