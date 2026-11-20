@@ -28,15 +28,32 @@ export function TradeList({
             {trades.map((trade) => (
                 <SortableItem key={trade.id} id={trade.id} className="bt-trade-row">
                     <a
-                        className="flex-1 underline"
+                        className="flex-1 underline flex justify-between gap-4"
                         href={bookmarkUrl(trade)}
-                        aria-disabled={!bookmarkUrl(trade)}>
+                        aria-disabled={!bookmarkUrl(trade)}
+                        onClick={() => sessionStorage.setItem('bt-bookmark-trade', trade.id)}>
                         {trade.completedAt && (
                             <span className="bt-completed" aria-label="Completed">
                                 ✓{' '}
                             </span>
                         )}
                         {trade.title}
+                        {trade.lastObservedPrice && (
+                            <span
+                                className="bt-trade-price flex gap-2 items-center"
+                                title={'Last observed price'}>
+                                {' '}
+                                {trade.lastObservedPrice.amount}
+                                {trade.lastObservedPrice.icon ? (
+                                    <img
+                                        src={trade.lastObservedPrice.icon}
+                                        alt={trade.lastObservedPrice.currency}
+                                    />
+                                ) : (
+                                    <small>{trade.lastObservedPrice.currency}</small>
+                                )}
+                            </span>
+                        )}
                         {!bookmarkUrl(trade) && (
                             <small className="bt-invalid-link"> — Link unavailable</small>
                         )}

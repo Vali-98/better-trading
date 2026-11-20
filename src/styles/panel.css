@@ -529,6 +529,10 @@
 .bt-completed {
     font-size: 10px;
 }
+.bt-trade-price img {
+    height: 1em;
+    vertical-align: -0.25em;
+}
 .bt-panel section .bt-icon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));

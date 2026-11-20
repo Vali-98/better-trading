@@ -6,6 +6,7 @@ export interface Trade {
     title: string
     completedAt: string | null
     location: { version: '1' | '2'; type: string; slug: string }
+    lastObservedPrice?: { amount: number; currency: string; icon?: string }
 }
 export interface Folder {
     id: string
@@ -30,6 +31,22 @@ export async function getTrades(id: string): Promise<Trade[]> {
 export const saveFolders = (folders: Folder[]) => setValue('bookmark-folders', folders)
 export const saveTrades = (id: string, trades: Trade[]) =>
     setValue(`bookmark-trades--${id}`, trades)
+
+// Find the folder holding the trade and overwrite its last observed price.
+export async function recordTradePrice(
+    tradeId: string,
+    price: NonNullable<Trade['lastObservedPrice']>
+): Promise<string | null> {
+    for (const folder of await getFolders()) {
+        const trades = await getTrades(folder.id)
+        const index = trades.findIndex((trade) => trade.id === tradeId)
+        if (index < 0) continue
+        trades[index] = { ...trades[index], lastObservedPrice: price }
+        await saveTrades(folder.id, trades)
+        return folder.id
+    }
+    return null
+}
 
 // Remove the visible folder first. A failed content cleanup leaves recoverable,
 // unreachable data rather than an existing folder with its trades erased.
